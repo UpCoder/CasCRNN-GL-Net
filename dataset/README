@@ -1,0 +1,3 @@
+- buildFolder.py extract the significant layer from the mhd file. the format of saving also is mhd
+- split_liverlesion.py split the result of buildFolder.py into training validation and test
+- convert2jpg.py convert the significant layer to jpg
