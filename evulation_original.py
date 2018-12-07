@@ -230,15 +230,15 @@ class Generate_Batch_Data_with_attributions:
                 pv_batch_rois]
 
             nc_batch_patches_preprocessed = [
-                self.preprocessing_image(nc_patch, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH) for nc_patch in
+                self.preprocessing_image(nc_patch, config.PATCH_IMAGE_HEIGHT, config.PATCH_IMAGE_WIDTH) for nc_patch in
                 nc_batch_patches
             ]
             art_batch_patches_preprocessed = [
-                self.preprocessing_image(art_patch, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH) for art_patch in
+                self.preprocessing_image(art_patch, config.PATCH_IMAGE_HEIGHT, config.PATCH_IMAGE_WIDTH) for art_patch in
                 art_batch_patches
             ]
             pv_batch_patches_preprocessed = [
-                self.preprocessing_image(pv_patch, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH) for pv_patch in
+                self.preprocessing_image(pv_patch, config.PATCH_IMAGE_HEIGHT, config.PATCH_IMAGE_WIDTH) for pv_patch in
                 pv_batch_patches
             ]
             if self.labels is not None:
@@ -259,9 +259,6 @@ class Generate_Batch_Data_with_attributions:
 
 def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
                                          labels, netname, model_path):
-    batch_dataset = Generate_Batch_Data_with_attributions(nc_rois, art_rois, pv_rois, nc_patches, art_patches,
-                                                          pv_patches, attrs, config.val_batch_size, labels)
-    generator = batch_dataset.generate_next_batch()
     nc_roi_placeholder = tf.placeholder(tf.float32,
                                         [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
                                         name='nc_roi_placeholder')
@@ -272,13 +269,13 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
                                         [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
                                         name='pv_roi_placeholder')
     nc_patch_placeholder = tf.placeholder(tf.float32,
-                                          [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
+                                          [None, config.PATCH_IMAGE_HEIGHT, config.PATCH_IMAGE_WIDTH, 3],
                                           name='nc_patch_placeholder')
     art_patch_placeholder = tf.placeholder(tf.float32,
-                                           [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
+                                           [None, config.PATCH_IMAGE_HEIGHT, config.PATCH_IMAGE_WIDTH, 3],
                                            name='art_patch_placeholder')
     pv_patch_placeholder = tf.placeholder(tf.float32,
-                                          [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
+                                          [None, config.PATCH_IMAGE_HEIGHT, config.PATCH_IMAGE_WIDTH, 3],
                                           name='pv_patch_placeholder')
     batch_label_placeholder = tf.placeholder(tf.int32, [None, 1], name='batch_label_input')
     batch_size_placeholder = tf.placeholder(tf.int32, [], name='batch_size')
@@ -307,6 +304,9 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
         ce_loss_values = []
         center_loss_values = []
 
+        batch_dataset = Generate_Batch_Data_with_attributions(nc_rois, art_rois, pv_rois, nc_patches, art_patches,
+                                                              pv_patches, attrs, config.val_batch_size, labels)
+        generator = batch_dataset.generate_next_batch()
         while True:
             nc_batch_rois, art_batch_rois, pv_batch_rois, \
             nc_batch_patches, art_batch_patches, pv_batch_patches, \
@@ -347,7 +347,7 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original/model.ckpt-3059',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original/model.ckpt-939',
         'netname': 'res50',
         'stage_name': 'val',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0'
