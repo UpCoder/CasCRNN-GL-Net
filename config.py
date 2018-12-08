@@ -28,7 +28,7 @@ MEAN_ATTRS = np.asarray([5.49446136e+01, 5.62638689e+01, 1.86754929e+02, 3.45037
 MAX_ATTRS = np.asarray([236., 209., 712., 33974., 1.096961], np.float32)
 NC_IMG_MEAN = np.asarray([30.016285, 58.861176, 30.016285], np.float32)
 ART_IMG_MEAN = np.asarray([55.895214, 70.9138, 55.895214], np.float32)
-PV_IMG_MEAN = np.asarray([ 65.929306, 110.245476,  65.929306], np.float32)
+PV_IMG_MEAN = np.asarray([65.929306, 110.245476,  65.929306], np.float32)
 RANDOM_SEED = 4242
 slim = tf.contrib.slim
 

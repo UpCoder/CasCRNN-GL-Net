@@ -1,21 +1,21 @@
 # -*- coding=utf-8 -*-
 import tensorflow as tf
-from tensorflow.contrib.slim.nets import vgg, resnet_v1
+from tensorflow.contrib.slim.nets import resnet_v1
 from tensorflow.contrib import slim
-from models.research.slim.nets import resnet_v2
+from models.research.slim.nets import resnet_v2, vgg
 import config
 
 
 def parametric_relu(_x):
-  alphas = tf.get_variable('alpha', _x.get_shape()[-1],
-                       initializer=tf.constant_initializer(0.0),
-                        dtype=tf.float32)
-  pos = tf.nn.relu(_x)
-  neg = alphas * (_x - abs(_x)) * 0.5
+    alphas = tf.get_variable('alpha', _x.get_shape()[-1],
+                             initializer=tf.constant_initializer(0.0),
+                             dtype=tf.float32)
+    pos = tf.nn.relu(_x)
+    neg = alphas * (_x - abs(_x)) * 0.5
+    return pos + neg
 
-  return pos + neg
 
-def conv_lstm(input, batch_size_ph, cell_output, final_output, cell_kernel, weight_decay):
+def conv_lstm(input, batch_size_ph, cell_output, final_output, cell_kernel, weight_decay, activation_fn=tf.nn.relu):
     '''
 
     :param input: 输入的tensor, 格式是[batch_size, step_size, h, w, channel]
@@ -51,7 +51,7 @@ def conv_lstm(input, batch_size_ph, cell_output, final_output, cell_kernel, weig
     outputs = tf.concat(outputs, axis=-1)
     print(outputs)
     with slim.arg_scope([slim.conv2d],
-                        activation_fn=tf.nn.relu,
+                        activation_fn=activation_fn,
                         weights_regularizer=slim.l2_regularizer(weight_decay),
                         weights_initializer=tf.contrib.layers.xavier_initializer(),
                         padding='SAME',
@@ -294,7 +294,7 @@ class networks:
 
 class networks_with_attrs:
     def __init__(self, b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_attrs, base_name,
-                 is_training, num_classes, batch_size):
+                 is_training, num_classes, batch_size, use_attribute_flag=True):
         self.roi_nc_input = b_nc_roi
         self.roi_art_input = b_art_roi
         self.roi_pv_input = b_pv_roi
@@ -303,6 +303,7 @@ class networks_with_attrs:
         self.patch_pv_input = b_pv_patch
         self.attrs_input = b_attrs
         self.batch_size = batch_size
+        self.use_attribute_flag = use_attribute_flag
 
         self.base_name = base_name
         self.is_training = is_training
@@ -336,18 +337,19 @@ class networks_with_attrs:
                     with slim.arg_scope(vgg.vgg_arg_scope()):
                         with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
                             print(phase_name, (phase_idx != 0), patch_inputs[phase_name])
-                            outputs, end_points = vgg.vgg_16(patch_inputs[phase_name], 1000,
-                                                             self.is_training, spatial_squeeze=False)
+                            outputs, end_points = vgg.vgg_16(patch_inputs[phase_name], None,
+                                                             self.is_training, spatial_squeeze=False, patch_flag=True)
                             print end_points.keys()
-                            patch_outputs.append(end_points['patch_based/vgg_16/fc8'])
+                            patch_outputs.append(end_points['final_feature'])
             with tf.variable_scope('roi_based'):
                 for phase_idx, phase_name in enumerate(phase_names_list):
                     with slim.arg_scope(vgg.vgg_arg_scope()):
                         with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
                             print phase_name, (phase_idx != 0)
-                            outputs, end_points = vgg.vgg_16(roi_inputs[phase_name], 1000,
-                                                             self.is_training, spatial_squeeze=False)
-                            roi_outputs.append(end_points['roi_based/vgg_16/fc8'])
+                            outputs, end_points = vgg.vgg_16(roi_inputs[phase_name], None,
+                                                             self.is_training, spatial_squeeze=False,
+                                                             fc_conv_padding='SAME')
+                            roi_outputs.append(end_points['roi_based/vgg_16/fc7'])
         elif self.base_name == 'res50':
             with tf.variable_scope('patch_based'):
                 for phase_idx, phase_name in enumerate(phase_names_list):
@@ -374,18 +376,22 @@ class networks_with_attrs:
         else:
             print 'Keyword Error'
             assert False
-        with tf.variable_scope('Attribute_Feature'):
-            with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                activation_fn=tf.nn.relu,
-                                weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
-                                biases_initializer=tf.zeros_initializer()):
-                num_attr_feature = 64
-                attrs_input = tf.expand_dims(tf.expand_dims(self.attrs_input, axis=1), axis=1)
-                attribute_feature = slim.conv2d(attrs_input, num_attr_feature, kernel_size=[1, 1], stride=1,
-                                                scope='conv1')
-                self.attribute_feature = slim.conv2d(attribute_feature, num_attr_feature, kernel_size=[1, 1],
-                                                     stride=1, scope='conv2')
+        if self.use_attribute_flag:
+            print('without attribute feature')
+            with tf.variable_scope('Attribute_Feature'):
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=tf.nn.relu,
+                                    weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
+                                    biases_initializer=tf.zeros_initializer()):
+                    num_attr_feature = 32
+                    attrs_input = tf.expand_dims(tf.expand_dims(self.attrs_input, axis=1), axis=1)
+                    attribute_feature = slim.conv2d(attrs_input, num_attr_feature, kernel_size=[1, 1], stride=1,
+                                                    scope='conv1')
+                    self.attribute_feature = slim.conv2d(attribute_feature, num_attr_feature, kernel_size=[1, 1],
+                                                         stride=1, scope='conv2')
+
         # 2048 for Resnet50
+        # 4096 for VGG16
         with tf.variable_scope('Global_Branch'):
             # gb_represent the global branch
             with slim.arg_scope([slim.conv2d, slim.fully_connected],
@@ -393,18 +399,21 @@ class networks_with_attrs:
                                 weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
                                 biases_initializer=tf.zeros_initializer()):
                 gb_rois = []
-                gb_rate = 128
+                gb_rate = 256
                 for phase_idx, phase_name in enumerate(phase_names_list):
                     roi_output = slim.conv2d(roi_outputs[phase_idx], gb_rate, kernel_size=[3, 3],
                                              stride=1, scope=phase_name)
                     gb_rois.append(tf.expand_dims(roi_output, axis=1))
                 gb_rois = tf.concat(gb_rois, axis=1)
-                gb_roi = conv_lstm(gb_rois, self.batch_size, gb_rate // 2, gb_rate, [1, 1], config.WEIGHT_DECAY)
+                gb_roi = conv_lstm(gb_rois, self.batch_size, gb_rate // 2, gb_rate, [1, 1], config.WEIGHT_DECAY,
+                                   activation_fn=parametric_relu)
                 gb_feature = tf.reduce_mean(gb_roi, axis=[1, 2])
-                gb_feature = tf.concat([gb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
+                if self.use_attribute_flag:
+                    gb_feature = tf.concat([gb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
                 self.gb_logits = slim.fully_connected(gb_feature,
                                                       self.num_classes, activation_fn=None, scope='logits_layer')
-        # 512 for resneg50
+        # 512 for resnet50
+        # 512 for vgg16
         with tf.variable_scope('Local_Branch'):
             with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                 activation_fn=tf.nn.relu,
@@ -417,9 +426,11 @@ class networks_with_attrs:
                                                scope=phase_name)
                     lb_rois.append(tf.expand_dims(patch_output, axis=1))
                 lb_rois = tf.concat(lb_rois, axis=1)
-                lb_roi = conv_lstm(lb_rois, self.batch_size, lb_rate // 2, lb_rate, [1, 1], config.WEIGHT_DECAY)
+                lb_roi = conv_lstm(lb_rois, self.batch_size, lb_rate // 2, lb_rate, [1, 1], config.WEIGHT_DECAY,
+                                   activation_fn=parametric_relu)
                 lb_feature = tf.reduce_mean(lb_roi, axis=[1, 2])
-                lb_feature = tf.concat([lb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
+                if self.use_attribute_flag:
+                    lb_feature = tf.concat([lb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
                 self.lb_logits = slim.fully_connected(lb_feature,
                                                       self.num_classes, activation_fn=None, scope='logits_layer')
 
@@ -451,23 +462,35 @@ class networks_with_attrs:
                     print('the triple_phase feature is ', triple_phase_feature)
                     final_inter_phase_rate = 256
                     final_feature = conv_lstm(triple_phase_feature, self.batch_size, final_inter_phase_rate // 2,
-                                              final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY)
+                                              final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY,
+                                              activation_fn=parametric_relu)
 
                 with tf.variable_scope('classifing_fc'):
                     self.final_feature = tf.reduce_mean(final_feature, [1, 2])
                     print('final_featrue is ', self.final_feature)
-                    cls_feature = tf.concat(
-                        [tf.expand_dims(tf.expand_dims(self.final_feature, axis=1), axis=1), self.attribute_feature],
-                        axis=-1)
-                    logits = slim.conv2d(cls_feature, self.num_classes, kernel_size=[1, 1], stride=1,
-                                         activation_fn=None, scope='logits_layer')
+                    if self.use_attribute_flag:
+                        cls_feature = tf.concat(
+                            [tf.expand_dims(tf.expand_dims(self.final_feature, axis=1), axis=1), self.attribute_feature],
+                            axis=-1)
+                        logits = slim.conv2d(cls_feature, self.num_classes, kernel_size=[1, 1], stride=1,
+                                             activation_fn=None, scope='logits_layer')
+                    else:
+                        logits = slim.conv2d(tf.expand_dims(tf.expand_dims(self.final_feature, axis=1), axis=1),
+                                             self.num_classes, kernel_size=[1, 1], stride=1, activation_fn=None,
+                                             scope='logits_layer')
                     self.logits = tf.reduce_mean(logits, [1, 2])
 
     def update_centers(self, labels, alpha):
+        '''
+        更新center
+        :param labels: Batch, 不是one hot格式编码
+        :param alpha: float, 学习率
+        :return:
+        '''
         with tf.variable_scope('center', reuse=True):
             centers = tf.get_variable('centers')
 
-        labels = tf.reshape(labels, [-1])
+        # labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
 
         diff = centers_batch - self.final_feature
@@ -484,13 +507,13 @@ class networks_with_attrs:
 
         return centers
 
-    def build_loss(self, b_label, lambda_center_loss = 1.0, lambda_global_branch = 0.8, lambda_local_branch=0.2,
-                   add_to_collection=True):
+    def build_loss(self, b_label, lambda_center_loss=1.0, lambda_global_branch=0.8, lambda_local_branch=0.2,
+                   alpha=0.5, add_to_collection=True):
         def _calculate_center_loss(features, labels):
             '''
             计算center loss
             :param features: B, C
-            :param labels: B, C
+            :param labels: B
             :return:
             '''
             with tf.variable_scope('center', reuse=True):
@@ -513,7 +536,7 @@ class networks_with_attrs:
         final_cross_entropy_mean = tf.reduce_mean(final_cross_entropy)
         print('the final cross entropy mean is ', final_cross_entropy_mean)
 
-        center_loss = _calculate_center_loss(self.final_feature, b_label)
+        center_loss = _calculate_center_loss(self.final_feature, tf.squeeze(b_label, axis=1))
         center_loss_mean = tf.reduce_mean(center_loss)
         print('center_loss_mean is ', center_loss_mean)
 
@@ -533,7 +556,7 @@ class networks_with_attrs:
             tf.add_to_collection(tf.GraphKeys.LOSSES, local_cross_entropy * lambda_local_branch)
             return final_cross_entropy_mean, center_loss_mean * lambda_center_loss, \
                    global_cross_entropy * lambda_global_branch, local_cross_entropy * lambda_local_branch, \
-                   self.update_centers(b_label, alpha=0.5)
+                   self.update_centers(tf.squeeze(b_label, axis=1), alpha=alpha)
         else:
             return final_cross_entropy_mean, center_loss_mean * lambda_center_loss, \
                    global_cross_entropy * lambda_global_branch, local_cross_entropy * lambda_local_branch

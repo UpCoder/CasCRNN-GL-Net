@@ -723,11 +723,13 @@ def get_filled_mask(mask):
     xs, ys = np.where(mask == 1)
     return mask, np.min(xs), np.min(ys), np.max(xs), np.max(ys)
 
+
 def compute_mean_img(imgs):
     pixel_values = []
     for img in imgs:
         pixel_values.append(img.mean((0, 1)))
     return np.mean(pixel_values, axis=0)
+
 
 def read_liver_mask(mask_path, size=16):
     from utils.Tools import get_boundingbox
@@ -774,6 +776,7 @@ def statics_medical_image_attributes(dataset_dir):
     print(
         'max height, width, perimeter, area, circle_rate are ', np.max(heights), np.max(widths), np.max(perimeters),
         np.max(areas), np.max(circle_rates))
+
 
 def statics_medical_image_windows(medical_image_dir, save_path):
 

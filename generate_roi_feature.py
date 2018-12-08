@@ -461,7 +461,7 @@ if __name__ == '__main__':
     restore_paras = {
         'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_attribute_val_gl/model.ckpt-10780',
         'netname': 'res50',
-        'stage_name': 'val',
+        'stage_name': 'train',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute',
         'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute',
         'attribute_flag': True

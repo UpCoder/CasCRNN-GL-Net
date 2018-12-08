@@ -258,7 +258,7 @@ class Generate_Batch_Data_with_attributions:
 
 
 def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
-                                         labels, netname, model_path):
+                                         labels, netname, model_path, using_attribute_flag=True):
     nc_roi_placeholder = tf.placeholder(tf.float32,
                                         [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
                                         name='nc_roi_placeholder')
@@ -284,7 +284,8 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
     net = networks_with_attrs(nc_roi_placeholder, art_roi_placeholder, pv_roi_placeholder, nc_patch_placeholder,
                               art_patch_placeholder, pv_patch_placeholder, attrs_placeholder, base_name=netname,
-                              is_training=True, num_classes=config.num_classes, batch_size=batch_size_placeholder)
+                              is_training=True, num_classes=config.num_classes, batch_size=batch_size_placeholder,
+                              use_attribute_flag=using_attribute_flag)
     logits = net.logits
     ce_loss, center_loss, gb_ce, lb_ce = net.build_loss(batch_label_placeholder, add_to_collection=False)
     predictions = []
@@ -347,21 +348,22 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original/model.ckpt-939',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original_wo_attribute/model.ckpt-1135',
         'netname': 'res50',
-        'stage_name': 'val',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0'
+        'stage_name': 'test',
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
+        'attribute_flag': False
     }
-    attribution_flag = True
-    if attribution_flag:
-        nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs, labels = \
-            generate_patches_with_attributions(
-                restore_paras['dataset_dir'],
-                restore_paras['stage_name'],
-                True)
 
-        evulate_imgs_batch_with_attributions(
-            nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
-            labels, model_path=restore_paras['model_path'], netname=restore_paras['netname']
-        )
+    nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs, labels = \
+        generate_patches_with_attributions(
+            restore_paras['dataset_dir'],
+            restore_paras['stage_name'],
+            True)
+
+    evulate_imgs_batch_with_attributions(
+        nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
+        labels, model_path=restore_paras['model_path'], netname=restore_paras['netname'],
+        using_attribute_flag=restore_paras['attribute_flag']
+    )
 

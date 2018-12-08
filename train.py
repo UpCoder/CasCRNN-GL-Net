@@ -210,15 +210,6 @@ def create_dataset_batch_queue(dataset):
                                                                                      config.ROI_IMAGE_HEIGHT,
                                                                                      config.ROI_IMAGE_WIDTH,
                                                                                      is_training=True)
-        # vgg_preprocessing.preprocess_image()
-        # image, glabel, gbboxes, gxs, gys = \
-        #     ssd_vgg_preprocessing.preprocess_image(
-        #         image, glabel, gbboxes, gxs, gys,
-        #         out_shape=config.train_image_shape,
-        #         data_format=config.data_format,
-        #         use_rotation=config.use_rotation,
-        #         is_training=True)
-        # image = tf.identity(image, 'processed_image')
         nc_roi = tf.identity(nc_roi, 'preprocessed_nc_roi')
         art_roi = tf.identity(art_roi, 'preprocessed_art_roi')
         pv_roi = tf.identity(pv_roi, 'preprocessed_pv_roi')
@@ -258,12 +249,6 @@ def sum_gradients(clone_grads):
             import pdb
             pdb.set_trace()
         averaged_grads.append((grad, v))
-        # print('%d is ok' % idx)
-    #         tf.summary.histogram("variables_and_gradients_" + grad.op.name, grad)
-    #         tf.summary.histogram("variables_and_gradients_" + v.op.name, v)
-    #         tf.summary.scalar("variables_and_gradients_" + grad.op.name+\
-    #               '_mean/var_mean', tf.reduce_mean(grad)/tf.reduce_mean(var))
-    #         tf.summary.scalar("variables_and_gradients_" + v.op.name+'_mean',tf.reduce_mean(var))
     return averaged_grads
 
 
@@ -288,13 +273,6 @@ def create_clones(batch_queue):
                        FLAGS.netname, True, num_classes=config.num_classes, batch_size=FLAGS.batch_size)
         # ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
         ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
-        # net = pixel_link_symbol.PixelLinkNet(b_image, is_training=True)
-        # net.build_loss(
-        #     pixel_cls_labels=b_pixel_cls_label,
-        #     pixel_cls_weights=b_pixel_cls_weight,
-        #     pixel_link_labels=b_pixel_link_label,
-        #     pixel_link_weights=b_pixel_link_weight,
-        #     do_summary=do_summary)
 
         # gather losses
         losses = tf.get_collection(tf.GraphKeys.LOSSES)
@@ -393,13 +371,14 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
         val_b_label, val_b_attrs = val_batch_queue.dequeue()
         # build model and loss
         train_net = networks_with_attrs(b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_attrs,
-                                  FLAGS.netname, True, num_classes=config.num_classes, batch_size=FLAGS.batch_size)
+                                        FLAGS.netname, True, num_classes=config.num_classes, batch_size=FLAGS.batch_size,
+                                        use_attribute_flag=FLAGS.attribute_flag)
         # ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
         ce_loss, center_loss, global_loss, local_loss, center_update_op = train_net.build_loss(b_label)
         sc.reuse_variables()
         val_net = networks_with_attrs(val_b_nc_roi, val_b_art_roi, val_b_pv_roi, val_b_nc_patch, val_b_art_patch,
                                       val_b_pv_patch, val_b_attrs, FLAGS.netname, False, config.num_classes,
-                                      batch_size=FLAGS.batch_size)
+                                      batch_size=FLAGS.batch_size, use_attribute_flag=FLAGS.attribute_flag)
         val_ce_loss, val_center_loss, val_global_loss, val_local_loss = val_net.build_loss(val_b_label,
                                                                                            add_to_collection=False)
 
@@ -503,6 +482,7 @@ def train(train_op, train_step_kwargs=None):
     #                               ignore_missing_vars=FLAGS.ignore_missing_vars,
     #                               checkpoint_exclude_scopes=FLAGS.checkpoint_exclude_scopes)
     saver = tf.train.Saver(max_to_keep=500, write_version=2)
+    save_interval_secs = 300
     if train_step_kwargs is None:
         slim.learning.train(
             train_op,
@@ -513,7 +493,7 @@ def train(train_op, train_step_kwargs=None):
             log_every_n_steps=FLAGS.log_every_n_steps,
             save_summaries_secs=30,
             saver=saver,
-            save_interval_secs=1200,
+            save_interval_secs=save_interval_secs,
             session_config=sess_config
         )
     else:
@@ -528,22 +508,22 @@ def train(train_op, train_step_kwargs=None):
             log_every_n_steps=FLAGS.log_every_n_steps,
             save_summaries_secs=30,
             saver=saver,
-            save_interval_secs=1200,
+            save_interval_secs=save_interval_secs,
             session_config=sess_config
         )
 
 
 def main(_):
     train_dataset, val_dataset = config_initialization()
-    if FLAGS.attribute_flag:
-        train_batch_queue = create_dataset_batch_queue_with_attributes(train_dataset)
-        val_batch_queue = create_dataset_batch_queue_with_attributes(val_dataset, prefix='val')
-        train_op, train_step_kwargs = create_clones_with_attrs(train_batch_queue, val_batch_queue)
-        train(train_op, train_step_kwargs)
-    else:
-        batch_queue = create_dataset_batch_queue(train_dataset)
-        train_op = create_clones(batch_queue)
-        train(train_op)
+    # if FLAGS.attribute_flag:
+    train_batch_queue = create_dataset_batch_queue_with_attributes(train_dataset)
+    val_batch_queue = create_dataset_batch_queue_with_attributes(val_dataset, prefix='val')
+    train_op, train_step_kwargs = create_clones_with_attrs(train_batch_queue, val_batch_queue)
+    train(train_op, train_step_kwargs)
+    # else:
+    #     batch_queue = create_dataset_batch_queue(train_dataset)
+    #     train_op = create_clones(batch_queue)
+    #     train(train_op)
 
 
 if __name__ == '__main__':

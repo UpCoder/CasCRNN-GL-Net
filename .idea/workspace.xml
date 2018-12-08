@@ -9,16 +9,16 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/GL_BD_LSTM$roi_feature_classifier.coverage" NAME="roi_feature_classifier Coverage Results" MODIFIED="1544153703303" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/GL_BD_LSTM$convert2jpg.coverage" NAME="convert2jpg Coverage Results" MODIFIED="1544092805954" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
+    <SUITE FILE_PATH="coverage/GL_BD_LSTM$roi_feature_classifier.coverage" NAME="roi_feature_classifier Coverage Results" MODIFIED="1544169557924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/GL_BD_LSTM$convert2jpg.coverage" NAME="convert2jpg Coverage Results" MODIFIED="1544164483967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
     <SUITE FILE_PATH="coverage/GL_BD_LSTM$medicalImage.coverage" NAME="medicalImage Coverage Results" MODIFIED="1543925801889" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
     <SUITE FILE_PATH="coverage/GL_BD_LSTM$evulation.coverage" NAME="evulation Coverage Results" MODIFIED="1544003553301" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/GL_BD_LSTM$tf_convert_data_original.coverage" NAME="tf_convert_data_original Coverage Results" MODIFIED="1544104140563" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
+    <SUITE FILE_PATH="coverage/GL_BD_LSTM$tf_convert_data_original.coverage" NAME="tf_convert_data_original Coverage Results" MODIFIED="1544164859357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
     <SUITE FILE_PATH="coverage/GL_BD_LSTM$generate_roi_feature.coverage" NAME="generate_roi_feature Coverage Results" MODIFIED="1544004462019" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/GL_BD_LSTM$medicalimage_to_tfrecords_original.coverage" NAME="medicalimage_to_tfrecords_original Coverage Results" MODIFIED="1544099329384" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
-    <SUITE FILE_PATH="coverage/GL_BD_LSTM$evulation_original.coverage" NAME="evulation_original Coverage Results" MODIFIED="1544150582974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/GL_BD_LSTM$generate_roi_feature_original.coverage" NAME="generate_roi_feature_original Coverage Results" MODIFIED="1544151692325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/GL_BD_LSTM$train.coverage" NAME="train Coverage Results" MODIFIED="1544148216242" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/GL_BD_LSTM$evulation_original.coverage" NAME="evulation_original Coverage Results" MODIFIED="1544172096514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/GL_BD_LSTM$generate_roi_feature_original.coverage" NAME="generate_roi_feature_original Coverage Results" MODIFIED="1544172602577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/GL_BD_LSTM$train.coverage" NAME="train Coverage Results" MODIFIED="1544237772524" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/GL_BD_LSTM$tf_convert_data.coverage" NAME="tf_convert_data Coverage Results" MODIFIED="1544071617345" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
   </component>
   <component name="FUSProjectUsageTrigger">
@@ -31,35 +31,35 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="66" />
-          <entry key="gitignore" value="57" />
+          <entry key="Python Console" value="86" />
+          <entry key="gitignore" value="72" />
           <entry key="md" value="505" />
-          <entry key="py" value="25916" />
+          <entry key="py" value="27603" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="505" />
-          <entry key="PLAIN_TEXT" value="57" />
-          <entry key="Python" value="25982" />
+          <entry key="PLAIN_TEXT" value="72" />
+          <entry key="Python" value="27689" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="README" value="1" />
-          <entry key="gitignore" value="3" />
-          <entry key="ipynb" value="1" />
+          <entry key="gitignore" value="4" />
+          <entry key="ipynb" value="2" />
           <entry key="md" value="1" />
-          <entry key="py" value="108" />
+          <entry key="py" value="132" />
           <entry key="txt" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="IPNB" value="1" />
+          <entry key="IPNB" value="2" />
           <entry key="Markdown" value="1" />
-          <entry key="PLAIN_TEXT" value="6" />
-          <entry key="Python" value="108" />
+          <entry key="PLAIN_TEXT" value="7" />
+          <entry key="Python" value="132" />
         </counts>
       </usages-collector>
     </session>
@@ -70,17 +70,30 @@
         <entry file="file://$PROJECT_DIR$/train.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="114">
-              <caret line="115" column="82" lean-forward="true" selection-start-line="115" selection-start-column="82" selection-end-line="115" selection-end-column="82" />
+              <caret line="475" column="12" selection-start-line="475" selection-start-column="8" selection-end-line="475" selection-end-column="12" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/preprocessing/vgg_preprocessing.py">
+        <entry file="file://$PROJECT_DIR$/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-123">
+            <state relative-caret-position="253">
+              <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
               <folding>
-                <element signature="e#0#222#0" expanded="true" />
+                <element signature="e#0#37#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/evulation_original.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="79">
+              <caret line="350" column="120" lean-forward="true" selection-start-line="350" selection-start-column="92" selection-end-line="350" selection-end-column="120" />
+              <folding>
+                <marker date="1544172095425" expanded="true" signature="641:8867" ph="..." />
               </folding>
             </state>
           </provider>
@@ -90,35 +103,11 @@
         <entry file="file://$PROJECT_DIR$/generate_roi_feature.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="173">
-              <caret line="463" column="26" selection-start-line="463" selection-start-column="26" selection-end-line="463" selection-end-column="26" />
+              <caret line="463" column="28" selection-start-line="463" selection-start-column="28" selection-end-line="463" selection-end-column="28" />
               <folding>
                 <element signature="e#23#46#0" expanded="true" />
-                <marker date="1544004459534" expanded="true" signature="12069:18590" ph="..." />
-                <marker date="1544004459534" expanded="true" signature="12234:12479" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#37#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/research/slim/preprocessing/vgg_preprocessing.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-112">
-              <caret line="477" column="26" selection-start-line="477" selection-start-column="4" selection-end-line="477" selection-end-column="26" />
-              <folding>
-                <element signature="e#1188#1226#0" expanded="true" />
+                <marker date="1544158735458" expanded="true" signature="12069:18590" ph="..." />
+                <marker date="1544158735458" expanded="true" signature="12234:12479" ph="..." />
               </folding>
             </state>
           </provider>
@@ -127,8 +116,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/generate_roi_feature_original.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="267">
-              <caret line="335" column="52" selection-start-line="335" selection-start-column="52" selection-end-line="335" selection-end-column="52" />
+            <state relative-caret-position="195">
+              <caret line="389" column="5" lean-forward="true" selection-start-line="389" selection-start-column="5" selection-end-line="389" selection-end-column="5" />
               <folding>
                 <element signature="e#23#46#0" expanded="true" />
               </folding>
@@ -136,11 +125,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/roi_feature_classifier.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="282">
-              <caret line="183" column="82" selection-start-line="174" selection-start-column="4" selection-end-line="183" selection-end-column="82" />
+            <state relative-caret-position="207">
+              <caret line="178" column="33" lean-forward="true" selection-start-line="178" selection-start-column="33" selection-end-line="178" selection-end-column="33" />
               <folding>
                 <element signature="e#23#41#0" expanded="true" />
               </folding>
@@ -149,31 +138,40 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/classification.py">
+        <entry file="file://$PROJECT_DIR$/networks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="229">
-              <caret line="51" column="19" selection-start-line="51" selection-start-column="19" selection-end-line="51" selection-end-column="19" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/remote_sources/-890723591/-125940560/sklearn/svm/classes.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="124">
-              <caret line="526" column="8" selection-start-line="526" selection-start-column="8" selection-end-line="526" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/evulation_original.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="297">
-              <caret line="123" column="96" lean-forward="true" selection-start-line="37" selection-start-column="8" selection-end-line="123" selection-end-column="96" />
+            <state relative-caret-position="-1381">
+              <caret line="393" column="24" selection-start-line="393" selection-start-column="24" selection-end-line="393" selection-end-column="24" />
               <folding>
-                <marker date="1544150580900" expanded="true" signature="641:8867" ph="..." />
+                <element signature="e#23#46#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/models/research/slim/nets/resnet_v1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/research/slim/nets/vgg.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="133">
+              <caret line="199" column="30" selection-start-line="199" selection-start-column="30" selection-end-line="199" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/remote_sources/-890723591/-1227933812/tensorflow/contrib/layers/python/layers/layers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="214">
+              <caret line="2944" selection-start-line="2944" selection-end-line="2944" />
             </state>
           </provider>
         </entry>
@@ -189,10 +187,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>test</find>
-      <find>error</find>
-      <find>acc_err</find>
-      <find>learning</find>
       <find>registration</find>
       <find>convertMHD2NPY</find>
       <find>convert2jpg_multiphase_with_liver</find>
@@ -217,8 +211,12 @@
       <find>config.ROI</find>
       <find>pyc</find>
       <find>res</find>
-      <find>GL</find>
       <find>patch_outputs</find>
+      <find>b_label is</find>
+      <find>networkS_WITH</find>
+      <find>GL</find>
+      <find>/</find>
+      <find>sess</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -230,29 +228,30 @@
         <option value="$PROJECT_DIR$/HOWTO_ tf.slim train+validate.ipynb" />
         <option value="$PROJECT_DIR$/dataset/medicalimage_to_tfrecords.py" />
         <option value="$PROJECT_DIR$/evulation.py" />
-        <option value="$PROJECT_DIR$/generate_roi_feature.py" />
         <option value="$PROJECT_DIR$/utils/classification.py" />
         <option value="$PROJECT_DIR$/dataset/tf_convert_data.py" />
         <option value="$PROJECT_DIR$/dataset/tf_convert_data_original.py" />
-        <option value="$PROJECT_DIR$/dataset/convert2jpg.py" />
         <option value="$PROJECT_DIR$/utils/multi-phase_visulization.py" />
         <option value="$PROJECT_DIR$/dataset/temp.py" />
         <option value="$PROJECT_DIR$/dataset/tfrecords_to_medicalimage.py" />
         <option value="$PROJECT_DIR$/dataset/dataset_utils.py" />
         <option value="$PROJECT_DIR$/dataset/tfrecords_to_common.py" />
         <option value="$PROJECT_DIR$/utils/Tools.py" />
-        <option value="$PROJECT_DIR$/dataset/medicalImage.py" />
         <option value="$PROJECT_DIR$/dataset/medicalimage_to_tfrecords_original.py" />
         <option value="$PROJECT_DIR$/models/research/slim/preprocessing/vgg_preprocessing.py" />
-        <option value="$PROJECT_DIR$/train.py" />
         <option value="$PROJECT_DIR$/models/research/slim/nets/resnet_v2.py" />
-        <option value="$PROJECT_DIR$/networks.py" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/evulation_original.py" />
-        <option value="$PROJECT_DIR$/config.py" />
-        <option value="$PROJECT_DIR$/generate_roi_feature_original.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/generate_roi_feature.py" />
+        <option value="$PROJECT_DIR$/dataset/medicalImage.py" />
+        <option value="$PROJECT_DIR$/dataset/convert2jpg.py" />
         <option value="$PROJECT_DIR$/roi_feature_classifier.py" />
+        <option value="$PROJECT_DIR$/train.py" />
+        <option value="$PROJECT_DIR$/evulation_original.py" />
+        <option value="$PROJECT_DIR$/generate_roi_feature_original.py" />
+        <option value="$PROJECT_DIR$/models/research/slim/nets/vgg.py" />
+        <option value="$PROJECT_DIR$/config.py" />
+        <option value="$PROJECT_DIR$/networks.py" />
       </list>
     </option>
   </component>
@@ -267,11 +266,10 @@
       <path value="$PROJECT_DIR$/models/research/syntaxnet/dragnn/viz/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="1" />
-    <option name="y" value="23" />
-    <option name="width" value="1280" />
-    <option name="height" value="732" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="650" />
+    <option name="width" value="630" />
+    <option name="height" value="800" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -293,6 +291,38 @@
             </path>
             <path>
               <item name="GL_BD_LSTM" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GL_BD_LSTM" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GL_BD_LSTM" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GL_BD_LSTM" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+              <item name="research" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GL_BD_LSTM" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GL_BD_LSTM" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+              <item name="research" type="462c0819:PsiDirectoryNode" />
+              <item name="slim" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GL_BD_LSTM" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GL_BD_LSTM" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+              <item name="research" type="462c0819:PsiDirectoryNode" />
+              <item name="slim" type="462c0819:PsiDirectoryNode" />
+              <item name="nets" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GL_BD_LSTM" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GL_BD_LSTM" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GL_BD_LSTM" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -306,6 +336,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$USER_HOME$/zzy/tensorflow-deeplab-resnet-master" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/models/research/slim/nets/resnet_v2.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -325,7 +356,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.roi_feature_classifier">
+  <component name="RunManager" selected="Python.train">
     <configuration name="convert2jpg" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="GL_BD_LSTM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -472,7 +503,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dataset/tf_convert_data_original.py" />
-      <option name="PARAMETERS" value="--dataset_name=medicalimage --dataset_dir=/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/ --output_name=medicalimage --stage_name=train --output_dir=/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/tfrecords/0_attribute_liver/train --attribute_flag=True" />
+      <option name="PARAMETERS" value="--dataset_name=medicalimage --dataset_dir=/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/ --output_name=medicalimage --stage_name=test --output_dir=/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/tfrecords/1_attribute_liver/test --attribute_flag=True" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -494,7 +525,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/train.py" />
-      <option name="PARAMETERS" value="--dataset_dir=/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/tfrecords/0_attribute_liver/train --dataset_name=medicalimage --train_dir=/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original --netname=res50 --batch_size=28 --attribute_flag=True" />
+      <option name="PARAMETERS" value="--dataset_dir=/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/tfrecords/0_attribute_liver/train --dataset_name=medicalimage --train_dir=/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/vgg16_original --netname=vgg16 --batch_size=10 --attribute_flag=True" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -514,11 +545,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.roi_feature_classifier" />
         <item itemvalue="Python.generate_roi_feature_original" />
         <item itemvalue="Python.evulation_original" />
-        <item itemvalue="Python.medicalimage_to_tfrecords_original" />
+        <item itemvalue="Python.roi_feature_classifier" />
         <item itemvalue="Python.convert2jpg" />
+        <item itemvalue="Python.medicalimage_to_tfrecords_original" />
       </list>
     </recent_temporary>
   </component>
@@ -536,10 +567,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="23" width="1280" height="732" extended-state="0" />
+    <frame x="1" y="24" width="1280" height="732" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2358643" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2358643" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
@@ -547,7 +578,7 @@
       <window_info anchor="bottom" id="File Transfer" sideWeight="0.49919224" weight="0.3296875" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3453125" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3453125" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3984375" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -579,40 +610,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/train.py</url>
-          <line>257</line>
+          <line>248</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/numpy/core/_methods.py" />
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/numpy/core/fromnumeric.py" />
-    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/python_stubs/-890723591/cv2/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="1165" column="27" selection-start-line="1165" selection-start-column="17" selection-end-line="1165" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/remote_sources/-890723591/-1227933812/tensorflow/contrib/layers/python/layers/layers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-564">
-          <caret line="1559" column="33" selection-start-line="1559" selection-start-column="20" selection-end-line="1559" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/remote_sources/-890723591/-1227933812/tensorflow/contrib/slim/python/slim/nets/vgg.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-551">
           <caret line="138" column="4" selection-start-line="138" selection-start-column="4" selection-end-line="138" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/HOWTO_ tf.slim train+validate.ipynb">
-      <provider selected="true" editor-type-id="ipnb-editor">
-        <state>
-          <selected id="8" />
         </state>
       </provider>
     </entry>
@@ -698,26 +706,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/medicalimage_to_tfrecords.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="130" column="4" selection-start-line="130" selection-start-column="4" selection-end-line="130" selection-end-column="4" />
-          <folding>
-            <element signature="e#2272#2281#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/tf_convert_data_original.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="56" selection-start-line="56" selection-end-line="56" />
-          <folding>
-            <element signature="e#1005#1028#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/remote_sources/-890723591/-1227933812/tensorflow/python/ops/parsing_ops.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="131">
@@ -748,43 +736,6 @@
           <caret line="265" lean-forward="true" selection-start-line="265" selection-end-line="265" />
           <folding>
             <element signature="e#11207#12421#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/medicalImage.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="725" column="4" selection-start-line="725" selection-start-column="4" selection-end-line="725" selection-end-column="4" />
-          <folding>
-            <element signature="e#23#46#0" expanded="true" />
-            <marker date="1544143212412" expanded="true" signature="25349:25354" ph="..." />
-            <marker date="1544143212412" expanded="true" signature="27901:28459" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/medicalimage_to_tfrecords_original.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="285" column="70" lean-forward="true" selection-start-line="285" selection-start-column="70" selection-end-line="285" selection-end-column="70" />
-          <folding>
-            <element signature="e#2315#2324#0" expanded="true" />
-            <marker date="1544143342846" expanded="true" signature="22260:22262" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/convert2jpg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="23" column="4" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="4" />
-          <folding>
-            <element signature="e#23#32#0" expanded="true" />
-            <marker date="1544099512262" expanded="true" signature="6653:6658" ph="..." />
-            <marker date="1544099512262" expanded="true" signature="13341:13804" ph="..." />
-            <marker date="1544099512262" expanded="true" signature="29658:29664" ph="..." />
-            <marker date="1544099512262" expanded="true" signature="32205:33423" ph="..." />
           </folding>
         </state>
       </provider>
@@ -847,13 +798,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="19" selection-start-column="19" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -867,95 +811,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/evulation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="625" column="42" lean-forward="true" selection-start-line="625" selection-start-column="42" selection-end-line="625" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#414#3127#0" />
-            <element signature="e#3213#6856#0" />
-            <element signature="e#6908#11353#0" />
-            <element signature="e#11387#15706#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/networks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="437" selection-start-line="437" selection-end-line="437" />
-          <folding>
-            <element signature="e#23#46#0" expanded="true" />
-            <element signature="e#2977#16251#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/generate_roi_feature.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="463" column="26" selection-start-line="463" selection-start-column="26" selection-end-line="463" selection-end-column="26" />
-          <folding>
-            <element signature="e#23#46#0" expanded="true" />
-            <marker date="1544004459534" expanded="true" signature="12069:18590" ph="..." />
-            <marker date="1544004459534" expanded="true" signature="12234:12479" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/preprocessing/vgg_preprocessing.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-123">
           <folding>
             <element signature="e#0#222#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="115" column="82" lean-forward="true" selection-start-line="115" selection-start-column="82" selection-end-line="115" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/research/slim/preprocessing/vgg_preprocessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-112">
-          <caret line="477" column="26" selection-start-line="477" selection-start-column="4" selection-end-line="477" selection-end-column="26" />
-          <folding>
-            <element signature="e#1188#1226#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/evulation_original.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="123" column="96" lean-forward="true" selection-start-line="37" selection-start-column="8" selection-end-line="123" selection-end-column="96" />
-          <folding>
-            <marker date="1544150580900" expanded="true" signature="641:8867" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#37#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/generate_roi_feature_original.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="267">
-          <caret line="335" column="52" selection-start-line="335" selection-start-column="52" selection-end-line="335" selection-end-column="52" />
-          <folding>
-            <element signature="e#23#46#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -974,13 +834,195 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="5" selection-start-line="5" selection-start-column="5" selection-end-line="5" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HOWTO_ tf.slim train+validate.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/remote_sources/-890723591/-1227933812/tensorflow/python/ops/random_ops.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="181" column="25" lean-forward="true" selection-start-line="181" selection-start-column="25" selection-end-line="181" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/research/slim/preprocessing/vgg_preprocessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="371" column="4" selection-start-line="371" selection-start-column="4" selection-end-line="371" selection-end-column="4" />
+          <folding>
+            <element signature="e#1188#1226#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/medicalImage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-562">
+          <caret line="779" lean-forward="true" selection-start-line="779" selection-end-line="779" />
+          <folding>
+            <element signature="e#23#46#0" expanded="true" />
+            <marker date="1544163936161" expanded="true" signature="25351:25356" ph="..." />
+            <marker date="1544163936161" expanded="true" signature="27904:28462" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/convert2jpg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="756" selection-start-line="756" selection-end-line="756" />
+          <folding>
+            <element signature="e#23#32#0" expanded="true" />
+            <marker date="1544164481439" expanded="true" signature="6654:6659" ph="..." />
+            <marker date="1544164481439" expanded="true" signature="13342:13805" ph="..." />
+            <marker date="1544164481439" expanded="true" signature="29659:29665" ph="..." />
+            <marker date="1544164481439" expanded="true" signature="32206:34957" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/medicalimage_to_tfrecords.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="130" column="4" selection-start-line="130" selection-start-column="4" selection-end-line="130" selection-end-column="4" />
+          <folding>
+            <element signature="e#2272#2281#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/tf_convert_data_original.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="69" selection-start-line="69" selection-end-line="69" />
+          <folding>
+            <element signature="e#1005#1028#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evulation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="625" column="42" lean-forward="true" selection-start-line="625" selection-start-column="42" selection-end-line="625" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#414#3127#0" />
+            <element signature="e#3213#6856#0" />
+            <element signature="e#6908#11353#0" />
+            <element signature="e#11387#15706#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/medicalimage_to_tfrecords_original.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="187" column="18" lean-forward="true" selection-start-line="187" selection-start-column="18" selection-end-line="187" selection-end-column="18" />
+          <folding>
+            <element signature="e#2315#2324#0" expanded="true" />
+            <marker date="1544143342846" expanded="true" signature="22260:22262" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/generate_roi_feature.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="463" column="28" selection-start-line="463" selection-start-column="28" selection-end-line="463" selection-end-column="28" />
+          <folding>
+            <element signature="e#23#46#0" expanded="true" />
+            <marker date="1544158735458" expanded="true" signature="12069:18590" ph="..." />
+            <marker date="1544158735458" expanded="true" signature="12234:12479" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/roi_feature_classifier.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="183" column="82" selection-start-line="174" selection-start-column="4" selection-end-line="183" selection-end-column="82" />
+        <state relative-caret-position="207">
+          <caret line="178" column="33" lean-forward="true" selection-start-line="178" selection-start-column="33" selection-end-line="178" selection-end-column="33" />
           <folding>
             <element signature="e#23#41#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evulation_original.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="79">
+          <caret line="350" column="120" lean-forward="true" selection-start-line="350" selection-start-column="92" selection-end-line="350" selection-end-column="120" />
+          <folding>
+            <marker date="1544172095425" expanded="true" signature="641:8867" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/generate_roi_feature_original.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="389" column="5" lean-forward="true" selection-start-line="389" selection-start-column="5" selection-end-line="389" selection-end-column="5" />
+          <folding>
+            <element signature="e#23#46#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/remote_sources/-890723591/-1227933812/tensorflow/contrib/layers/python/layers/layers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="214">
+          <caret line="2944" selection-start-line="2944" selection-end-line="2944" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/research/slim/nets/vgg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="199" column="30" selection-start-line="199" selection-start-column="30" selection-end-line="199" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="475" column="12" selection-start-line="475" selection-start-column="8" selection-end-line="475" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1381">
+          <caret line="393" column="24" selection-start-line="393" selection-start-column="24" selection-end-line="393" selection-end-column="24" />
+          <folding>
+            <element signature="e#23#46#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/research/slim/nets/resnet_v1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
         </state>
       </provider>
     </entry>

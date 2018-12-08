@@ -303,7 +303,7 @@ def generate_roi_feature_with_attributions(cur_dataset_dir, slice_name, patch_si
     return logits_values
 
 
-def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path):
+def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path, using_attribute_flag=True):
     '''
     对dataset下面的每一个slice生成测试的结果
     :param dataset: dataset的路径
@@ -333,7 +333,8 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
     # label_placeholder = tf.placeholder(tf.int32, [None], name='label_placeholder')
     net = networks_with_attrs(nc_roi_placeholder, art_roi_placeholder, pv_roi_placeholder, nc_patch_placeholder,
                               art_patch_placeholder, pv_patch_placeholder, batch_attrs_placeholder, netname,
-                              is_training=False, num_classes=config.num_classes, batch_size=batch_size_placeholder)
+                              is_training=False, num_classes=config.num_classes, batch_size=batch_size_placeholder,
+                              use_attribute_flag=using_attribute_flag)
     logits = net.logits
     ce_loss, center_loss, gb_ce, lb_ce = net.build_loss(batch_label_placeholder, add_to_collection=False)
     predictions = []
@@ -352,20 +353,19 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
         batch_count = 0
 
         slice_names = os.listdir(dataset)
-        for slice_name in slice_names:
+        for idx, slice_name in enumerate(slice_names):
             if slice_name.startswith('.DS'):
                 continue
             # if not slice_name.endswith('0'):
             #     continue
-            print(slice_name)
+            print(slice_name, idx, ' / ', len(slice_names))
             cur_data_dir = os.path.join(dataset, slice_name)
-            if attribute_flag:
-                logits_values = generate_roi_feature_with_attributions(dataset, slice_name, config.patch_size,
-                                                                       sess, logits, nc_roi_placeholder,
-                                                                       art_roi_placeholder, pv_roi_placeholder,
-                                                                       nc_patch_placeholder, art_patch_placeholder,
-                                                                       pv_patch_placeholder, batch_attrs_placeholder,
-                                                                       batch_size_placeholder)
+            logits_values = generate_roi_feature_with_attributions(dataset, slice_name, config.patch_size,
+                                                                   sess, logits, nc_roi_placeholder,
+                                                                   art_roi_placeholder, pv_roi_placeholder,
+                                                                   nc_patch_placeholder, art_patch_placeholder,
+                                                                   pv_patch_placeholder, batch_attrs_placeholder,
+                                                                   batch_size_placeholder)
             roi_feature = np.asarray([0., 0., 0., 0., 0.], np.float32)
             patch_num = len(logits_values) * 1.0
             for value in np.unique(logits_values):
@@ -379,14 +379,14 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 
 
 if __name__ == '__main__':
-    util.proc.set_proc_name('ld_' + '_' + 'medical_image_classification_test_on_' + '_GPU_' + gpu_id)
+    util.proc.set_proc_name('ld_' + '_' + 'medical_image_classification_test_on' + '_GPU_' + gpu_id)
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original/model.ckpt-939',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original_wo_attribute/model.ckpt-1135',
         'netname': 'res50',
-        'stage_name': 'test',
+        'stage_name': 'train',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
         'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/res50_original',
-        'attribute_flag': True
+        'attribute_flag': False
     }
 
     generate_roi_feature_dataset(
@@ -394,7 +394,7 @@ if __name__ == '__main__':
         restore_paras['model_path'],
         os.path.join(restore_paras['roi_feature_save_dir'],
                      restore_paras['netname'] + '_' +restore_paras['stage_name'] + '.npy'),
-        restore_paras['attribute_flag']
+        using_attribute_flag=restore_paras['attribute_flag']
     )
 
 

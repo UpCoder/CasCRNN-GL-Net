@@ -111,6 +111,7 @@ def calculate_mask_attributes(mask):
     circle_metric = 4 * np.pi * area / (perimeter * perimeter * 1.0)
     return (max_xs - min_xs), (max_ys - min_ys), perimeter, area, circle_metric, edge
 
+
 def convert2jpg_multiphase(slice_dir, stage_name, save_dir):
     patient_name = os.path.basename(slice_dir).split('_')[0]
     cur_save_dir = os.path.join(save_dir, stage_name, os.path.basename(slice_dir))
@@ -726,6 +727,43 @@ def convertJPG2NPY(dataset_dir, stage_name):
     np.save(os.path.join(dataset_dir, stage_name+'_labels.npy'), labels)
 
 
+def mv021(dataset_dir_0, dataset_dir_1):
+    '''
+    将0号划分的文件按照文件顺序，移动到1号划分。因为0号划分中有liver_mask
+    :param dataset_dir:
+    :return:
+    '''
+    path_dict = {}
+    for stage_name in ['train', 'val', 'test']:
+        cur_dataset_dir = os.path.join(dataset_dir_0, stage_name)
+        slice_names = os.listdir(cur_dataset_dir)
+        for slice_name in slice_names:
+            if slice_name.startswith('.DS'):
+                continue
+            cur_slice_dir = os.path.join(cur_dataset_dir, slice_name)
+            if slice_name in path_dict.keys():
+                print cur_slice_dir, path_dict[slice_name]
+                assert False
+            path_dict[slice_name] = cur_slice_dir
+    import shutil
+    for stage_name in ['train', 'val', 'test']:
+        cur_dataset_dir = os.path.join(dataset_dir_1, stage_name)
+        slice_names = os.listdir(cur_dataset_dir)
+        for slice_name in slice_names:
+            if slice_name.startswith('.DS'):
+                continue
+            cur_slice_dir = os.path.join(cur_dataset_dir, slice_name)
+            # remove the original file
+            files = os.listdir(cur_slice_dir)
+            for file_name in files:
+                os.remove(os.path.join(cur_slice_dir, file_name))
+
+            source_dir = path_dict[slice_name]
+            source_files = os.listdir(source_dir)
+            for source_file_name in source_files:
+                shutil.copy2(os.path.join(source_dir, source_file_name),
+                             os.path.join(cur_slice_dir, source_file_name))
+
 if __name__ == '__main__':
     # image_dir = '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0'
     # LiverLesionDetection_Iterator(
@@ -736,14 +774,19 @@ if __name__ == '__main__':
     #     'PV'
     # )
 
-    image_dir = '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0'
-    MICCAI2018_Iterator(
-        image_dir,
-        convert2jpg_multiphase_with_liver,
-        '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute_liver'
-    )
+    # image_dir = '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0'
+    # MICCAI2018_Iterator(
+    #     image_dir,
+    #     convert2jpg_multiphase_with_liver,
+    #     '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute_liver'
+    # )
 
     # for stage_name in ['train', 'val', 'test']:
     #     convertJPG2NPY('/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute_liver',
     #                    stage_name)
     # convertMHD2NPY('/media/dl-box/HDCZ-UT/datasets/MICCAI2018/Slices/crossvalidation/0', 'train')
+
+    mv021(
+        '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
+        '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1'
+    )

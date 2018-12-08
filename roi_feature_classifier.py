@@ -159,17 +159,17 @@ if __name__ == '__main__':
     # test_features = test_data['features']
     # test_labels = test_data['labels']
     # SVM
-    # predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, test_features, test_labels,
-    #                                                    adjust_parameters=True)
-    # # use default parameters
-    # predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
-    #                               C=1.0, gamma='auto')
-    # print 'ACC is ', acc
-    # calculate_acc_error(predicted_label, test_labels)
-    # for idx in range(len(test_labels)):
-    #     if predicted_label[idx] != test_labels[idx]:
-    #         print('prediction error, gt is %d, pred is %d, slice_name is %s' %
-    #               (test_labels[idx], predicted_label[idx], test_slice_names[idx]))
+    predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, test_features, test_labels,
+                                                       adjust_parameters=True)
+    # use default parameters
+    predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
+                                  C=1.0, gamma='auto')
+    print 'ACC is ', acc
+    calculate_acc_error(predicted_label, test_labels)
+    for idx in range(len(test_labels)):
+        if predicted_label[idx] != test_labels[idx]:
+            print('prediction error, gt is %d, pred is %d, slice_name is %s' %
+                  (test_labels[idx], predicted_label[idx], test_slice_names[idx]))
 
     # KNN
     _, k = KNN.do(train_features, train_labels, val_features, val_labels,
