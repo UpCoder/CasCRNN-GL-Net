@@ -348,11 +348,11 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original_wo_attribute/model.ckpt-1135',
-        'netname': 'res50',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/vgg16_original/model.ckpt-1103',
+        'netname': 'vgg16',
         'stage_name': 'test',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
-        'attribute_flag': False
+        'attribute_flag': True
     }
 
     nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs, labels = \

@@ -294,7 +294,7 @@ class networks:
 
 class networks_with_attrs:
     def __init__(self, b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_attrs, base_name,
-                 is_training, num_classes, batch_size, use_attribute_flag=True):
+                 is_training, num_classes, batch_size, use_attribute_flag=True, clstm_flag=True):
         self.roi_nc_input = b_nc_roi
         self.roi_art_input = b_art_roi
         self.roi_pv_input = b_pv_roi
@@ -304,6 +304,7 @@ class networks_with_attrs:
         self.attrs_input = b_attrs
         self.batch_size = batch_size
         self.use_attribute_flag = use_attribute_flag
+        self.clstm_flag = clstm_flag
 
         self.base_name = base_name
         self.is_training = is_training
@@ -404,9 +405,12 @@ class networks_with_attrs:
                     roi_output = slim.conv2d(roi_outputs[phase_idx], gb_rate, kernel_size=[3, 3],
                                              stride=1, scope=phase_name)
                     gb_rois.append(tf.expand_dims(roi_output, axis=1))
-                gb_rois = tf.concat(gb_rois, axis=1)
-                gb_roi = conv_lstm(gb_rois, self.batch_size, gb_rate // 2, gb_rate, [1, 1], config.WEIGHT_DECAY,
-                                   activation_fn=parametric_relu)
+                if self.clstm_flag:
+                    gb_rois = tf.concat(gb_rois, axis=1)
+                    gb_roi = conv_lstm(gb_rois, self.batch_size, gb_rate // 2, gb_rate, [1, 1], config.WEIGHT_DECAY,
+                                       activation_fn=parametric_relu)
+                else:
+                    gb_roi = tf.squeeze(tf.concat(gb_rois, axis=-1))
                 gb_feature = tf.reduce_mean(gb_roi, axis=[1, 2])
                 if self.use_attribute_flag:
                     gb_feature = tf.concat([gb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
@@ -426,8 +430,11 @@ class networks_with_attrs:
                                                scope=phase_name)
                     lb_rois.append(tf.expand_dims(patch_output, axis=1))
                 lb_rois = tf.concat(lb_rois, axis=1)
-                lb_roi = conv_lstm(lb_rois, self.batch_size, lb_rate // 2, lb_rate, [1, 1], config.WEIGHT_DECAY,
-                                   activation_fn=parametric_relu)
+                if self.clstm_flag:
+                    lb_roi = conv_lstm(lb_rois, self.batch_size, lb_rate // 2, lb_rate, [1, 1], config.WEIGHT_DECAY,
+                                       activation_fn=parametric_relu)
+                else:
+                    lb_roi = tf.squeeze(tf.concat(lb_rois, axis=-1))
                 lb_feature = tf.reduce_mean(lb_roi, axis=[1, 2])
                 if self.use_attribute_flag:
                     lb_feature = tf.concat([lb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
@@ -460,11 +467,13 @@ class networks_with_attrs:
                         tf.expand_dims(pv_gl_feature, axis=1),
                     ], axis=1)
                     print('the triple_phase feature is ', triple_phase_feature)
-                    final_inter_phase_rate = 256
-                    final_feature = conv_lstm(triple_phase_feature, self.batch_size, final_inter_phase_rate // 2,
-                                              final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY,
-                                              activation_fn=parametric_relu)
-
+                    if self.clstm_flag:
+                        final_inter_phase_rate = 256
+                        final_feature = conv_lstm(triple_phase_feature, self.batch_size, final_inter_phase_rate // 2,
+                                                  final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY,
+                                                  activation_fn=parametric_relu)
+                    else:
+                        final_feature = tf.concat([nc_gl_feature, art_gl_feature, pv_gl_feature ], axis=-1)
                 with tf.variable_scope('classifing_fc'):
                     self.final_feature = tf.reduce_mean(final_feature, [1, 2])
                     print('final_featrue is ', self.final_feature)

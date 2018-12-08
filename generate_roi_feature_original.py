@@ -11,8 +11,6 @@ import util
 import random
 from dataset.medicalImage import read_mhd_image, read_liver_mask, get_filled_mask, get_liver_path
 from dataset.convert2jpg import extract_patches, calculate_mask_attributes
-gpu_id = '2'
-os.environ['CUDA_VISIBLE_DEVICES'] = gpu_id
 
 
 def preprocessing_image(image, output_height, output_width):
@@ -379,16 +377,22 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 
 
 if __name__ == '__main__':
-    util.proc.set_proc_name('ld_' + '_' + 'medical_image_classification_test_on' + '_GPU_' + gpu_id)
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original_wo_attribute/model.ckpt-1135',
-        'netname': 'res50',
-        'stage_name': 'train',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/vgg16_original/model.ckpt-1103',
+        'netname': 'vgg16',
+        'stage_name': 'test',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
-        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/res50_original',
-        'attribute_flag': False
+        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/vgg16_original',
+        'attribute_flag': True,
+        'gpu_id': '1'
     }
-
+    os.environ['CUDA_VISIBLE_DEVICES'] = restore_paras['gpu_id']
+    util.proc.set_proc_name('ld' + '_' + 'compute_' + restore_paras['stage_name'] + '_roi_feature_on' + '_GPU_'
+                            + restore_paras['gpu_id'])
+    if not os.path.exists(restore_paras['roi_feature_save_dir']):
+        print('roi_feature_save_dir do not exists')
+        os.mkdir(restore_paras['roi_feature_save_dir'])
+        print('make it!')
     generate_roi_feature_dataset(
         os.path.join(restore_paras['dataset_dir'], restore_paras['stage_name']), restore_paras['netname'],
         restore_paras['model_path'],

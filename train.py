@@ -68,6 +68,9 @@ tf.app.flags.DEFINE_string('netname', 'res50', 'the name of network')
 tf.app.flags.DEFINE_boolean(
     'attribute_flag', False, 'the flag represent whether use the attribution'
 )
+tf.app.flags.DEFINE_boolean(
+    'clstm_flag', False, 'the flag represent whether use the clstm block'
+)
 tf.app.flags.DEFINE_integer('VALIDATION_INTERVAL', 10, 'the interval of validation')
 FLAGS = tf.app.flags.FLAGS
 
@@ -372,13 +375,14 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
         # build model and loss
         train_net = networks_with_attrs(b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_attrs,
                                         FLAGS.netname, True, num_classes=config.num_classes, batch_size=FLAGS.batch_size,
-                                        use_attribute_flag=FLAGS.attribute_flag)
+                                        use_attribute_flag=FLAGS.attribute_flag, clstm_flag=FLAGS.clstm_flag)
         # ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
         ce_loss, center_loss, global_loss, local_loss, center_update_op = train_net.build_loss(b_label)
         sc.reuse_variables()
         val_net = networks_with_attrs(val_b_nc_roi, val_b_art_roi, val_b_pv_roi, val_b_nc_patch, val_b_art_patch,
                                       val_b_pv_patch, val_b_attrs, FLAGS.netname, False, config.num_classes,
-                                      batch_size=FLAGS.batch_size, use_attribute_flag=FLAGS.attribute_flag)
+                                      batch_size=FLAGS.batch_size, use_attribute_flag=FLAGS.attribute_flag,
+                                      clstm_flag=FLAGS.clstm_flag)
         val_ce_loss, val_center_loss, val_global_loss, val_local_loss = val_net.build_loss(val_b_label,
                                                                                            add_to_collection=False)
 

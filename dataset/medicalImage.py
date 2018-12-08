@@ -823,6 +823,25 @@ def mv_uncertain(dataset_dir, save_dir):
             shutil.copytree(cur_dir_path, os.path.join(save_dir, line))
 
 
+def cqq_record_labeled_file(dataset_dir, save_path):
+    '''
+    帮助陈青青统计已经有标记的数据名称
+    :param dataset_dir:
+    :return:
+    '''
+
+    recorded_list = []
+    for type in ['CYST', 'FNH', 'HCC', 'HEM', 'METS']:
+        slice_names = os.listdir(os.path.join(dataset_dir, type))
+        for slice_name in slice_names:
+            if '_' in slice_name:
+                recorded_list.append(slice_name)
+    import csv
+    with open(save_path, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerows(recorded_list)
+
+
 if __name__ == '__main__':
     # for phasename in ['NC', 'ART', 'PV']:
     #     convert_dicomseries2mhd(
@@ -853,5 +872,9 @@ if __name__ == '__main__':
     #     '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute/train')
 
 
-    mv_uncertain('/资料/数据集/MICCAI2018/Slices/crossvalidation/0',
-                 '/资料/数据集/MICCAI2018/Slices/crossvalidation/0/uncertain')
+    # mv_uncertain('/资料/数据集/MICCAI2018/Slices/crossvalidation/0',
+    #              '/资料/数据集/MICCAI2018/Slices/crossvalidation/0/uncertain')
+    cqq_record_labeled_file(
+        '/media/give/Chuckie/ld/dataset/MedicalImage/Category',
+        '/media/give/Chuckie/ld/dataset/MedicalImage/Category/full_labeled.csv',
+    )
