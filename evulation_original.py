@@ -12,8 +12,6 @@ from dataset.medicalImage import resolve_attribute_file, read_mhd_image, get_liv
 from dataset.convert2jpg import calculate_mask_attributes, extract_patches
 from config import RANDOM_SEED
 
-os.environ['CUDA_VISIBLE_DEVICES']='2'
-
 
 def generate_patches_with_attributions(dataset_dir, stage_name, shuffling=True):
     cur_dataset_dir = os.path.join(dataset_dir, stage_name)
@@ -258,7 +256,7 @@ class Generate_Batch_Data_with_attributions:
 
 
 def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
-                                         labels, netname, model_path, using_attribute_flag=True):
+                                         labels, netname, model_path, using_attribute_flag=True, using_clstm_flag=True):
     nc_roi_placeholder = tf.placeholder(tf.float32,
                                         [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
                                         name='nc_roi_placeholder')
@@ -285,7 +283,7 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
     net = networks_with_attrs(nc_roi_placeholder, art_roi_placeholder, pv_roi_placeholder, nc_patch_placeholder,
                               art_patch_placeholder, pv_patch_placeholder, attrs_placeholder, base_name=netname,
                               is_training=True, num_classes=config.num_classes, batch_size=batch_size_placeholder,
-                              use_attribute_flag=using_attribute_flag)
+                              use_attribute_flag=using_attribute_flag, clstm_flag=using_clstm_flag)
     logits = net.logits
     ce_loss, center_loss, gb_ce, lb_ce = net.build_loss(batch_label_placeholder, add_to_collection=False)
     predictions = []
@@ -348,13 +346,16 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/vgg16_original/model.ckpt-1103',
-        'netname': 'vgg16',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/res50_original_0.0001/model.ckpt-8749',
+        'netname': 'res50',
         'stage_name': 'test',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
-        'attribute_flag': True
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
+        'attribute_flag': True,
+        'clstm_flag': True,
+        'gpu_id': '3'
     }
-
+    # 5532
+    os.environ['CUDA_VISIBLE_DEVICES'] = restore_paras['gpu_id']
     nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs, labels = \
         generate_patches_with_attributions(
             restore_paras['dataset_dir'],
@@ -364,6 +365,6 @@ if __name__ == '__main__':
     evulate_imgs_batch_with_attributions(
         nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
         labels, model_path=restore_paras['model_path'], netname=restore_paras['netname'],
-        using_attribute_flag=restore_paras['attribute_flag']
+        using_attribute_flag=restore_paras['attribute_flag'], using_clstm_flag=restore_paras['clstm_flag']
     )
 

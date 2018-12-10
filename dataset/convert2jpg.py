@@ -784,9 +784,13 @@ if __name__ == '__main__':
     # for stage_name in ['train', 'val', 'test']:
     #     convertJPG2NPY('/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute_liver',
     #                    stage_name)
+    for stage_name in ['train', 'val', 'test']:
+        convertMHD2NPY('/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
+                       stage_name)
     # convertMHD2NPY('/media/dl-box/HDCZ-UT/datasets/MICCAI2018/Slices/crossvalidation/0', 'train')
 
-    mv021(
-        '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
-        '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1'
-    )
+
+    # mv021(
+    #     '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
+    #     '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1'
+    # )

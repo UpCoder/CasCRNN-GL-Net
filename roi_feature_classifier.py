@@ -84,7 +84,8 @@ def generate_features_labels(data_dir):
     return train_features, train_labels, val_features, val_labels, test_features, test_labels
 
 
-def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/res50_original'):
+def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/vgg16_original_wo_attribute',
+                 basename='vgg16'):
     from dataset.medicalImage import resolve_attribute_file
     import config
     def _load_label_with_attributions(dataset_dir, stage_name):
@@ -113,7 +114,7 @@ def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalIm
         attrs = np.concatenate([nc_attrs, art_attrs, pv_attrs], axis=1)
         return labels, slice_names, attrs
 
-    def _load_label(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0', stage_name='train'):
+    def _load_label(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1', stage_name='train'):
         slice_names = os.listdir(os.path.join(dataset_dir, stage_name))
         labels = []
         for slice_name in slice_names:
@@ -122,11 +123,11 @@ def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalIm
             labels.append(int(slice_name[-1]))
         return labels, slice_names
 
-    train_npy_path = os.path.join(dataset_dir, 'res50_train.npy')
-    val_npy_path = os.path.join(dataset_dir, 'res50_val.npy')
-    test_npy_path = os.path.join(dataset_dir, 'res50_test.npy')
+    train_npy_path = os.path.join(dataset_dir, basename + '_train.npy')
+    val_npy_path = os.path.join(dataset_dir, basename + '_test.npy')
+    test_npy_path = os.path.join(dataset_dir, basename + '_test.npy')
     train_labels, train_slice_names = _load_label(stage_name='train')
-    val_labels, val_slice_names = _load_label(stage_name='val')
+    val_labels, val_slice_names = _load_label(stage_name='test')
     test_labels, test_slice_names = _load_label(stage_name='test')
     train_features = np.load(train_npy_path)
     val_features = np.load(val_npy_path)
@@ -159,11 +160,12 @@ if __name__ == '__main__':
     # test_features = test_data['features']
     # test_labels = test_data['labels']
     # SVM
-    predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, test_features, test_labels,
+    predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, val_features, val_labels,
                                                        adjust_parameters=True)
     # use default parameters
     predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
                                   C=1.0, gamma='auto')
+                                  # C=c_params, gamma=g_params)
     print 'ACC is ', acc
     calculate_acc_error(predicted_label, test_labels)
     for idx in range(len(test_labels)):
@@ -173,7 +175,7 @@ if __name__ == '__main__':
 
     # KNN
     _, k = KNN.do(train_features, train_labels, val_features, val_labels,
-                                                       adjust_parameters=True)
+                  adjust_parameters=True)
     # use default parameters
     predicted_label = KNN.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
                              k=k)

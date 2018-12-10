@@ -459,7 +459,7 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 if __name__ == '__main__':
     util.proc.set_proc_name('ld_test_on' + '_' + 'medical_image_classification' + '_GPU_' + gpu_id)
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_attribute_val_gl/model.ckpt-10780',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/res50_original_1/model.ckpt-1063',
         'netname': 'res50',
         'stage_name': 'train',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/JPG/0_attribute',

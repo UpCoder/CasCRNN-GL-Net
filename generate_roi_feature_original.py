@@ -301,7 +301,8 @@ def generate_roi_feature_with_attributions(cur_dataset_dir, slice_name, patch_si
     return logits_values
 
 
-def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path, using_attribute_flag=True):
+def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path, using_attribute_flag=True,
+                                 using_clstm_flag=True):
     '''
     对dataset下面的每一个slice生成测试的结果
     :param dataset: dataset的路径
@@ -332,7 +333,7 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
     net = networks_with_attrs(nc_roi_placeholder, art_roi_placeholder, pv_roi_placeholder, nc_patch_placeholder,
                               art_patch_placeholder, pv_patch_placeholder, batch_attrs_placeholder, netname,
                               is_training=False, num_classes=config.num_classes, batch_size=batch_size_placeholder,
-                              use_attribute_flag=using_attribute_flag)
+                              use_attribute_flag=using_attribute_flag, clstm_flag=using_clstm_flag)
     logits = net.logits
     ce_loss, center_loss, gb_ce, lb_ce = net.build_loss(batch_label_placeholder, add_to_collection=False)
     predictions = []
@@ -378,13 +379,14 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/vgg16_original/model.ckpt-1103',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/vgg16_original_wo_attribute/model.ckpt-1098',
         'netname': 'vgg16',
         'stage_name': 'test',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
-        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/vgg16_original',
-        'attribute_flag': True,
-        'gpu_id': '1'
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
+        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/vgg16_original_wo_attribute',
+        'attribute_flag': False,
+        'clstm_flag': True,
+        'gpu_id': '3'
     }
     os.environ['CUDA_VISIBLE_DEVICES'] = restore_paras['gpu_id']
     util.proc.set_proc_name('ld' + '_' + 'compute_' + restore_paras['stage_name'] + '_roi_feature_on' + '_GPU_'
@@ -398,7 +400,7 @@ if __name__ == '__main__':
         restore_paras['model_path'],
         os.path.join(restore_paras['roi_feature_save_dir'],
                      restore_paras['netname'] + '_' +restore_paras['stage_name'] + '.npy'),
-        using_attribute_flag=restore_paras['attribute_flag']
+        using_attribute_flag=restore_paras['attribute_flag'], using_clstm_flag=restore_paras['clstm_flag']
     )
 
 

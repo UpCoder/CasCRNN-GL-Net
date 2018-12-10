@@ -410,7 +410,11 @@ class networks_with_attrs:
                     gb_roi = conv_lstm(gb_rois, self.batch_size, gb_rate // 2, gb_rate, [1, 1], config.WEIGHT_DECAY,
                                        activation_fn=parametric_relu)
                 else:
-                    gb_roi = tf.squeeze(tf.concat(gb_rois, axis=-1))
+                    print('gb rois is ', gb_rois)
+                    gb_roi = tf.squeeze(tf.concat(gb_rois, axis=-1), axis=1)
+                    print('gb roi is ', gb_roi)
+                    gb_roi = slim.conv2d(gb_roi, gb_rate, kernel_size=[1, 1], stride=1, activation_fn=tf.nn.relu,
+                                         scope='inter-phase-feature')
                 gb_feature = tf.reduce_mean(gb_roi, axis=[1, 2])
                 if self.use_attribute_flag:
                     gb_feature = tf.concat([gb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
@@ -429,12 +433,16 @@ class networks_with_attrs:
                     patch_output = slim.conv2d(patch_outputs[phase_idx], lb_rate, kernel_size=[3, 3], stride=1,
                                                scope=phase_name)
                     lb_rois.append(tf.expand_dims(patch_output, axis=1))
-                lb_rois = tf.concat(lb_rois, axis=1)
                 if self.clstm_flag:
+                    lb_rois = tf.concat(lb_rois, axis=1)
                     lb_roi = conv_lstm(lb_rois, self.batch_size, lb_rate // 2, lb_rate, [1, 1], config.WEIGHT_DECAY,
                                        activation_fn=parametric_relu)
                 else:
-                    lb_roi = tf.squeeze(tf.concat(lb_rois, axis=-1))
+                    print 'lb rois are ', lb_rois
+                    lb_roi = tf.squeeze(tf.concat(lb_rois, axis=-1), axis=1)
+                    lb_roi = slim.conv2d(lb_roi, lb_rate, kernel_size=[1, 1], stride=1, activation_fn=tf.nn.relu,
+                                         scope='inter-phase-feature')
+                    print 'lb roi is ', lb_roi
                 lb_feature = tf.reduce_mean(lb_roi, axis=[1, 2])
                 if self.use_attribute_flag:
                     lb_feature = tf.concat([lb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
@@ -456,9 +464,12 @@ class networks_with_attrs:
                     art_gl_feature = tf.concat([patch_outputs[0], roi_outputs[0]], axis=-1)
                     nc_gl_feature = tf.concat([patch_outputs[1], roi_outputs[1]], axis=-1)
                     pv_gl_feature = tf.concat([patch_outputs[2], roi_outputs[2]], axis=-1)
-                    art_gl_feature = slim.conv2d(art_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1], scope='art')
-                    nc_gl_feature = slim.conv2d(nc_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1], scope='nc')
-                    pv_gl_feature = slim.conv2d(pv_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1], scope='pv')
+                    art_gl_feature = slim.conv2d(art_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
+                                                 scope='art')
+                    nc_gl_feature = slim.conv2d(nc_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
+                                                scope='nc')
+                    pv_gl_feature = slim.conv2d(pv_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
+                                                scope='pv')
 
                 with tf.variable_scope('extracting_enhancement_pattern'):
                     triple_phase_feature = tf.concat([
@@ -467,13 +478,16 @@ class networks_with_attrs:
                         tf.expand_dims(pv_gl_feature, axis=1),
                     ], axis=1)
                     print('the triple_phase feature is ', triple_phase_feature)
+                    final_inter_phase_rate = 256
                     if self.clstm_flag:
-                        final_inter_phase_rate = 256
                         final_feature = conv_lstm(triple_phase_feature, self.batch_size, final_inter_phase_rate // 2,
                                                   final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY,
                                                   activation_fn=parametric_relu)
                     else:
-                        final_feature = tf.concat([nc_gl_feature, art_gl_feature, pv_gl_feature ], axis=-1)
+
+                        final_feature = tf.concat([nc_gl_feature, art_gl_feature, pv_gl_feature], axis=-1)
+                        final_feature = slim.conv2d(final_feature, final_inter_phase_rate, kernel_size=[1, 1], stride=1,
+                                                    scope='inter-phase-feature', activation_fn=tf.nn.relu)
                 with tf.variable_scope('classifing_fc'):
                     self.final_feature = tf.reduce_mean(final_feature, [1, 2])
                     print('final_featrue is ', self.final_feature)

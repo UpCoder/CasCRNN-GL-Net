@@ -27,7 +27,7 @@ tf.app.flags.DEFINE_float('gpu_memory_fraction', -1,
 
 tf.app.flags.DEFINE_integer('batch_size', None, 'The number of samples in each batch.')
 tf.app.flags.DEFINE_integer('num_gpus', 1, 'The number of gpus can be used.')
-tf.app.flags.DEFINE_integer('max_number_of_steps', 10000000, 'The maximum number of training steps.')
+tf.app.flags.DEFINE_integer('max_number_of_steps', 10000, 'The maximum number of training steps.')
 tf.app.flags.DEFINE_integer('log_every_n_steps', 1, 'log frequency')
 tf.app.flags.DEFINE_bool("ignore_missing_vars", True, '')
 tf.app.flags.DEFINE_string('checkpoint_exclude_scopes', ['fuse_multi_phase', 'pixel_seg', 'multiscale*'],
@@ -36,7 +36,7 @@ tf.app.flags.DEFINE_string('checkpoint_exclude_scopes', ['fuse_multi_phase', 'pi
 # =========================================================================== #
 # Optimizer configs.
 # =========================================================================== #
-tf.app.flags.DEFINE_float('learning_rate', 0.001, 'learning rate.')
+tf.app.flags.DEFINE_float('learning_rate', 0.0001, 'learning rate.')
 tf.app.flags.DEFINE_float('momentum', 0.9, 'The momentum for the MomentumOptimizer')
 tf.app.flags.DEFINE_float('weight_decay', 0.0001, 'The weight decay on the model weights.')
 tf.app.flags.DEFINE_bool('using_moving_average', True, 'Whether to use ExponentionalMovingAverage')
