@@ -71,6 +71,9 @@ tf.app.flags.DEFINE_boolean(
 tf.app.flags.DEFINE_boolean(
     'clstm_flag', False, 'the flag represent whether use the clstm block'
 )
+tf.app.flags.DEFINE_boolean(
+    'pretrained_flag', True, 'the flag represent whether use the pretrained model'
+)
 tf.app.flags.DEFINE_integer('VALIDATION_INTERVAL', 10, 'the interval of validation')
 FLAGS = tf.app.flags.FLAGS
 
@@ -481,7 +484,10 @@ def train(train_op, train_step_kwargs=None):
     elif FLAGS.gpu_memory_fraction > 0:
         sess_config.gpu_options.per_process_gpu_memory_fraction = FLAGS.gpu_memory_fraction
     checkpoint_path = os.path.join(config.CHECKPOINT_DIR, checkpoints_names[FLAGS.netname])
-    init_fn = get_init_fn(checkpoint_path)
+    if FLAGS.pretrained_flag:
+        init_fn = get_init_fn(checkpoint_path)
+    else:
+        init_fn = None
     # init_fn = util.tf.get_init_fn(checkpoint_path=checkpoint_path, train_dir=FLAGS.train_dir,
     #                               ignore_missing_vars=FLAGS.ignore_missing_vars,
     #                               checkpoint_exclude_scopes=FLAGS.checkpoint_exclude_scopes)

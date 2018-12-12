@@ -84,8 +84,8 @@ def generate_features_labels(data_dir):
     return train_features, train_labels, val_features, val_labels, test_features, test_labels
 
 
-def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/vgg16_original_wo_attribute',
-                 basename='vgg16'):
+def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/res50_original_wo_pretrained',
+                 basename='res50'):
     from dataset.medicalImage import resolve_attribute_file
     import config
     def _load_label_with_attributions(dataset_dir, stage_name):
@@ -114,20 +114,22 @@ def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalIm
         attrs = np.concatenate([nc_attrs, art_attrs, pv_attrs], axis=1)
         return labels, slice_names, attrs
 
-    def _load_label(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1', stage_name='train'):
+    def _load_label(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0', stage_name='train'):
+        print(os.path.join(dataset_dir, stage_name))
         slice_names = os.listdir(os.path.join(dataset_dir, stage_name))
         labels = []
         for slice_name in slice_names:
             if slice_name.startswith('.DS'):
                 continue
             labels.append(int(slice_name[-1]))
+        print slice_names
         return labels, slice_names
 
     train_npy_path = os.path.join(dataset_dir, basename + '_train.npy')
-    val_npy_path = os.path.join(dataset_dir, basename + '_test.npy')
+    val_npy_path = os.path.join(dataset_dir, basename + '_val.npy')
     test_npy_path = os.path.join(dataset_dir, basename + '_test.npy')
     train_labels, train_slice_names = _load_label(stage_name='train')
-    val_labels, val_slice_names = _load_label(stage_name='test')
+    val_labels, val_slice_names = _load_label(stage_name='val')
     test_labels, test_slice_names = _load_label(stage_name='test')
     train_features = np.load(train_npy_path)
     val_features = np.load(val_npy_path)
@@ -144,7 +146,8 @@ def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalIm
 if __name__ == '__main__':
     train_features, train_labels, val_features, val_labels, test_features, test_labels, \
     train_slice_names, val_slice_names, test_slice_names = load_feature()
-
+    for test_feature, test_slice_name in zip(test_features, test_slice_names):
+        print test_feature, test_slice_name
     import scipy.io as scio
     from utils.classification import SVM, KNN
 
@@ -160,13 +163,14 @@ if __name__ == '__main__':
     # test_features = test_data['features']
     # test_labels = test_data['labels']
     # SVM
-    predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, val_features, val_labels,
-                                                       adjust_parameters=True)
-    # use default parameters
-    predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
-                                  C=1.0, gamma='auto')
-                                  # C=c_params, gamma=g_params)
-    print 'ACC is ', acc
+    # predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, test_features, test_labels,
+    #                                                    adjust_parameters=True)
+    # # use default parameters
+    # predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
+    #                               # C=1.0, gamma='auto')
+    #                               C=c_params, gamma=g_params)
+    predicted_label = np.argmax(test_features, axis=1)
+    # print 'ACC is ', acc
     calculate_acc_error(predicted_label, test_labels)
     for idx in range(len(test_labels)):
         if predicted_label[idx] != test_labels[idx]:

@@ -651,7 +651,7 @@ def convertMHD2NPY(dataset_dir, stage_name):
     slice_names = os.listdir(stage_dir)
     labels = []
     imgs = []
-    output_shape = (227, 227)
+    output_shape = (224, 224)
     for slice_name in slice_names:
         if slice_name.startswith('.DS'):
             continue

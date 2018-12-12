@@ -592,5 +592,7 @@ def findStr(string, substr, findCnt):
     if len(listStr) <= findCnt:
         return -1
     return len(string)-len(listStr[-1])-len(substr)
+
+
 if __name__ == '__main__':
     test_show_regression()

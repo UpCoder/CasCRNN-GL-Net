@@ -350,8 +350,9 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
         print('restore from ', model_path)
         saver.restore(sess, model_path)
         batch_count = 0
-
+        print(dataset)
         slice_names = os.listdir(dataset)
+        print(slice_names)
         for idx, slice_name in enumerate(slice_names):
             if slice_name.startswith('.DS'):
                 continue
@@ -379,15 +380,17 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/vgg16_original_wo_attribute/model.ckpt-1098',
-        'netname': 'vgg16',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/res50_original_without_pretrained/model.ckpt-6490',
+        'netname': 'res50',
         'stage_name': 'test',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
-        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/vgg16_original_wo_attribute',
-        'attribute_flag': False,
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
+        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/res50_original_wo_pretrained',
+        'attribute_flag': True,
         'clstm_flag': True,
         'gpu_id': '3'
     }
+    # 0 9935
+    # 1 9946
     os.environ['CUDA_VISIBLE_DEVICES'] = restore_paras['gpu_id']
     util.proc.set_proc_name('ld' + '_' + 'compute_' + restore_paras['stage_name'] + '_roi_feature_on' + '_GPU_'
                             + restore_paras['gpu_id'])
