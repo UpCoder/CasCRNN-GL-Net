@@ -294,7 +294,11 @@ class networks:
 
 class networks_with_attrs:
     def __init__(self, b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_attrs, base_name,
-                 is_training, num_classes, batch_size, use_attribute_flag=True, clstm_flag=True):
+                 is_training, num_classes, batch_size, use_attribute_flag=True, clstm_flag=True,
+                 global_branch_flag=True, local_branch_flag=True):
+        if global_branch_flag is False and local_branch_flag is False:
+            print('global and local branch can not be False at the same time!')
+            assert False
         self.roi_nc_input = b_nc_roi
         self.roi_art_input = b_art_roi
         self.roi_pv_input = b_pv_roi
@@ -305,6 +309,8 @@ class networks_with_attrs:
         self.batch_size = batch_size
         self.use_attribute_flag = use_attribute_flag
         self.clstm_flag = clstm_flag
+        self.global_branch_flag = global_branch_flag
+        self.local_branch_flag = local_branch_flag
 
         self.base_name = base_name
         self.is_training = is_training
@@ -352,28 +358,30 @@ class networks_with_attrs:
                                                              fc_conv_padding='SAME')
                             roi_outputs.append(end_points['roi_based/vgg_16/fc7'])
         elif self.base_name == 'res50':
-            with tf.variable_scope('patch_based'):
-                for phase_idx, phase_name in enumerate(phase_names_list):
-                    with slim.arg_scope(resnet_v1.resnet_arg_scope()):
-                        # with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
-                        print(phase_name, (phase_idx != 0))
-                        print('patch_inputs[phase_name] ', patch_inputs[phase_name])
+            if self.local_branch_flag:
+                with tf.variable_scope('patch_based'):
+                    for phase_idx, phase_name in enumerate(phase_names_list):
+                        with slim.arg_scope(resnet_v1.resnet_arg_scope()):
+                            # with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
+                            print(phase_name, (phase_idx != 0))
+                            print('patch_inputs[phase_name] ', patch_inputs[phase_name])
 
-                        outputs, end_points = resnet_v2.resnet_v2_50(patch_inputs[phase_name], None,
-                                                                     self.is_training, patch_flag=True,
-                                                                     global_pool=False,
-                                                                     reuse=(phase_idx != 0))
-                        print end_points.keys()
-                        patch_outputs.append(end_points['final_feature'])
-            with tf.variable_scope('roi_based'):
-                for phase_idx, phase_name in enumerate(phase_names_list):
-                    with slim.arg_scope(resnet_v1.resnet_arg_scope()):
-                        # with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
-                        print phase_name, (phase_idx != 0)
-                        outputs, end_points = resnet_v2.resnet_v2_50(roi_inputs[phase_name], None,
-                                                                     self.is_training, reuse=(phase_idx != 0),
-                                                                     global_pool=False,)
-                        roi_outputs.append(end_points['final_feature'])
+                            outputs, end_points = resnet_v2.resnet_v2_50(patch_inputs[phase_name], None,
+                                                                         self.is_training, patch_flag=True,
+                                                                         global_pool=False,
+                                                                         reuse=(phase_idx != 0))
+                            print end_points.keys()
+                            patch_outputs.append(end_points['final_feature'])
+            if self.global_branch_flag:
+                with tf.variable_scope('roi_based'):
+                    for phase_idx, phase_name in enumerate(phase_names_list):
+                        with slim.arg_scope(resnet_v1.resnet_arg_scope()):
+                            # with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
+                            print phase_name, (phase_idx != 0)
+                            outputs, end_points = resnet_v2.resnet_v2_50(roi_inputs[phase_name], None,
+                                                                         self.is_training, reuse=(phase_idx != 0),
+                                                                         global_pool=False,)
+                            roi_outputs.append(end_points['final_feature'])
         else:
             print 'Keyword Error'
             assert False
@@ -393,61 +401,63 @@ class networks_with_attrs:
 
         # 2048 for Resnet50
         # 4096 for VGG16
-        with tf.variable_scope('Global_Branch'):
-            # gb_represent the global branch
-            with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                activation_fn=tf.nn.relu,
-                                weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
-                                biases_initializer=tf.zeros_initializer()):
-                gb_rois = []
-                gb_rate = 256
-                for phase_idx, phase_name in enumerate(phase_names_list):
-                    roi_output = slim.conv2d(roi_outputs[phase_idx], gb_rate, kernel_size=[3, 3],
-                                             stride=1, scope=phase_name)
-                    gb_rois.append(tf.expand_dims(roi_output, axis=1))
-                if self.clstm_flag:
-                    gb_rois = tf.concat(gb_rois, axis=1)
-                    gb_roi = conv_lstm(gb_rois, self.batch_size, gb_rate // 2, gb_rate, [1, 1], config.WEIGHT_DECAY,
-                                       activation_fn=parametric_relu)
-                else:
-                    print('gb rois is ', gb_rois)
-                    gb_roi = tf.squeeze(tf.concat(gb_rois, axis=-1), axis=1)
-                    print('gb roi is ', gb_roi)
-                    gb_roi = slim.conv2d(gb_roi, gb_rate, kernel_size=[1, 1], stride=1, activation_fn=tf.nn.relu,
-                                         scope='inter-phase-feature')
-                gb_feature = tf.reduce_mean(gb_roi, axis=[1, 2])
-                if self.use_attribute_flag:
-                    gb_feature = tf.concat([gb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
-                self.gb_logits = slim.fully_connected(gb_feature,
-                                                      self.num_classes, activation_fn=None, scope='logits_layer')
+        if self.global_branch_flag:
+            with tf.variable_scope('Global_Branch'):
+                # gb_represent the global branch
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=tf.nn.relu,
+                                    weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
+                                    biases_initializer=tf.zeros_initializer()):
+                    gb_rois = []
+                    gb_rate = 256
+                    for phase_idx, phase_name in enumerate(phase_names_list):
+                        roi_output = slim.conv2d(roi_outputs[phase_idx], gb_rate, kernel_size=[3, 3],
+                                                 stride=1, scope=phase_name)
+                        gb_rois.append(tf.expand_dims(roi_output, axis=1))
+                    if self.clstm_flag:
+                        gb_rois = tf.concat(gb_rois, axis=1)
+                        gb_roi = conv_lstm(gb_rois, self.batch_size, gb_rate // 2, gb_rate, [1, 1], config.WEIGHT_DECAY,
+                                           activation_fn=parametric_relu)
+                    else:
+                        print('gb rois is ', gb_rois)
+                        gb_roi = tf.squeeze(tf.concat(gb_rois, axis=-1), axis=1)
+                        print('gb roi is ', gb_roi)
+                        gb_roi = slim.conv2d(gb_roi, gb_rate, kernel_size=[1, 1], stride=1, activation_fn=tf.nn.relu,
+                                             scope='inter-phase-feature')
+                    gb_feature = tf.reduce_mean(gb_roi, axis=[1, 2])
+                    if self.use_attribute_flag:
+                        gb_feature = tf.concat([gb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
+                    self.gb_logits = slim.fully_connected(gb_feature,
+                                                          self.num_classes, activation_fn=None, scope='logits_layer')
         # 512 for resnet50
         # 512 for vgg16
-        with tf.variable_scope('Local_Branch'):
-            with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                activation_fn=tf.nn.relu,
-                                weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
-                                biases_initializer=tf.zeros_initializer()):
-                lb_rois = []
-                lb_rate = 128
-                for phase_idx, phase_name in enumerate(phase_names_list):
-                    patch_output = slim.conv2d(patch_outputs[phase_idx], lb_rate, kernel_size=[3, 3], stride=1,
-                                               scope=phase_name)
-                    lb_rois.append(tf.expand_dims(patch_output, axis=1))
-                if self.clstm_flag:
-                    lb_rois = tf.concat(lb_rois, axis=1)
-                    lb_roi = conv_lstm(lb_rois, self.batch_size, lb_rate // 2, lb_rate, [1, 1], config.WEIGHT_DECAY,
-                                       activation_fn=parametric_relu)
-                else:
-                    print 'lb rois are ', lb_rois
-                    lb_roi = tf.squeeze(tf.concat(lb_rois, axis=-1), axis=1)
-                    lb_roi = slim.conv2d(lb_roi, lb_rate, kernel_size=[1, 1], stride=1, activation_fn=tf.nn.relu,
-                                         scope='inter-phase-feature')
-                    print 'lb roi is ', lb_roi
-                lb_feature = tf.reduce_mean(lb_roi, axis=[1, 2])
-                if self.use_attribute_flag:
-                    lb_feature = tf.concat([lb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
-                self.lb_logits = slim.fully_connected(lb_feature,
-                                                      self.num_classes, activation_fn=None, scope='logits_layer')
+        if self.local_branch_flag:
+            with tf.variable_scope('Local_Branch'):
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=tf.nn.relu,
+                                    weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
+                                    biases_initializer=tf.zeros_initializer()):
+                    lb_rois = []
+                    lb_rate = 128
+                    for phase_idx, phase_name in enumerate(phase_names_list):
+                        patch_output = slim.conv2d(patch_outputs[phase_idx], lb_rate, kernel_size=[3, 3], stride=1,
+                                                   scope=phase_name)
+                        lb_rois.append(tf.expand_dims(patch_output, axis=1))
+                    if self.clstm_flag:
+                        lb_rois = tf.concat(lb_rois, axis=1)
+                        lb_roi = conv_lstm(lb_rois, self.batch_size, lb_rate // 2, lb_rate, [1, 1], config.WEIGHT_DECAY,
+                                           activation_fn=parametric_relu)
+                    else:
+                        print 'lb rois are ', lb_rois
+                        lb_roi = tf.squeeze(tf.concat(lb_rois, axis=-1), axis=1)
+                        lb_roi = slim.conv2d(lb_roi, lb_rate, kernel_size=[1, 1], stride=1, activation_fn=tf.nn.relu,
+                                             scope='inter-phase-feature')
+                        print 'lb roi is ', lb_roi
+                    lb_feature = tf.reduce_mean(lb_roi, axis=[1, 2])
+                    if self.use_attribute_flag:
+                        lb_feature = tf.concat([lb_feature, tf.squeeze(self.attribute_feature, axis=[1, 2])], axis=-1)
+                    self.lb_logits = slim.fully_connected(lb_feature,
+                                                          self.num_classes, activation_fn=None, scope='logits_layer')
 
         print('the roi_outputs is   ', roi_outputs)
         print('the patch_outputs is ', patch_outputs)
@@ -456,38 +466,63 @@ class networks_with_attrs:
                             weights_regularizer=slim.l2_regularizer(config.WEIGHT_DECAY),
                             biases_initializer=tf.zeros_initializer()):
             with slim.arg_scope([slim.conv2d], padding='SAME'):
-                with tf.variable_scope('combining_patch_roi'):
-                    final_intra_phase_rate = 512
-                    # ART NC PV
-                    print('patch_outputs is ', patch_outputs[0])
-                    print('roi_outputs is ', roi_outputs[0])
-                    art_gl_feature = tf.concat([patch_outputs[0], roi_outputs[0]], axis=-1)
-                    nc_gl_feature = tf.concat([patch_outputs[1], roi_outputs[1]], axis=-1)
-                    pv_gl_feature = tf.concat([patch_outputs[2], roi_outputs[2]], axis=-1)
-                    art_gl_feature = slim.conv2d(art_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
-                                                 scope='art')
-                    nc_gl_feature = slim.conv2d(nc_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
-                                                scope='nc')
-                    pv_gl_feature = slim.conv2d(pv_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
-                                                scope='pv')
+                if self.global_branch_flag and self.local_branch_flag:
+                    with tf.variable_scope('combining_patch_roi'):
+                        final_intra_phase_rate = 512
+                        # ART NC PV
+                        print('patch_outputs is ', patch_outputs[0])
+                        print('roi_outputs is ', roi_outputs[0])
+                        art_gl_feature = tf.concat([patch_outputs[0], roi_outputs[0]], axis=-1)
+                        nc_gl_feature = tf.concat([patch_outputs[1], roi_outputs[1]], axis=-1)
+                        pv_gl_feature = tf.concat([patch_outputs[2], roi_outputs[2]], axis=-1)
+                        art_gl_feature = slim.conv2d(art_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
+                                                     scope='art')
+                        nc_gl_feature = slim.conv2d(nc_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
+                                                    scope='nc')
+                        pv_gl_feature = slim.conv2d(pv_gl_feature, final_intra_phase_rate, stride=1, kernel_size=[1, 1],
+                                                    scope='pv')
+                    with tf.variable_scope('extracting_enhancement_pattern'):
+                        triple_phase_feature = tf.concat([
+                            tf.expand_dims(nc_gl_feature, axis=1),
+                            tf.expand_dims(art_gl_feature, axis=1),
+                            tf.expand_dims(pv_gl_feature, axis=1),
+                        ], axis=1)
+                        print('the triple_phase feature is ', triple_phase_feature)
+                        final_inter_phase_rate = 256
+                        if self.clstm_flag:
+                            final_feature = conv_lstm(triple_phase_feature, self.batch_size, final_inter_phase_rate // 2,
+                                                      final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY,
+                                                      activation_fn=parametric_relu)
+                        else:
 
-                with tf.variable_scope('extracting_enhancement_pattern'):
-                    triple_phase_feature = tf.concat([
-                        tf.expand_dims(nc_gl_feature, axis=1),
-                        tf.expand_dims(art_gl_feature, axis=1),
-                        tf.expand_dims(pv_gl_feature, axis=1),
-                    ], axis=1)
-                    print('the triple_phase feature is ', triple_phase_feature)
-                    final_inter_phase_rate = 256
-                    if self.clstm_flag:
+                            final_feature = tf.concat([nc_gl_feature, art_gl_feature, pv_gl_feature], axis=-1)
+                            final_feature = slim.conv2d(final_feature, final_inter_phase_rate, kernel_size=[1, 1], stride=1,
+                                                        scope='inter-phase-feature', activation_fn=tf.nn.relu)
+                elif self.global_branch_flag:
+                    with tf.variable_scope('extracting_enhancement_pattern'):
+                        triple_phase_feature = tf.concat([
+                            tf.expand_dims(roi_outputs[0], axis=1),
+                            tf.expand_dims(roi_outputs[1], axis=1),
+                            tf.expand_dims(roi_outputs[2], axis=1),
+                        ], axis=1)
+                        final_inter_phase_rate = 256
                         final_feature = conv_lstm(triple_phase_feature, self.batch_size, final_inter_phase_rate // 2,
                                                   final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY,
                                                   activation_fn=parametric_relu)
-                    else:
-
-                        final_feature = tf.concat([nc_gl_feature, art_gl_feature, pv_gl_feature], axis=-1)
-                        final_feature = slim.conv2d(final_feature, final_inter_phase_rate, kernel_size=[1, 1], stride=1,
-                                                    scope='inter-phase-feature', activation_fn=tf.nn.relu)
+                elif self.local_branch_flag:
+                    with tf.variable_scope('extracting_enhancement_pattern'):
+                        triple_phase_feature = tf.concat([
+                            tf.expand_dims(patch_outputs[0], axis=1),
+                            tf.expand_dims(patch_outputs[1], axis=1),
+                            tf.expand_dims(patch_outputs[2], axis=1),
+                        ], axis=1)
+                        final_inter_phase_rate = 256
+                        final_feature = conv_lstm(triple_phase_feature, self.batch_size, final_inter_phase_rate // 2,
+                                                  final_inter_phase_rate, [1, 1], config.WEIGHT_DECAY,
+                                                  activation_fn=parametric_relu)
+                else:
+                    print('can not generate final feature output!')
+                    assert False
                 with tf.variable_scope('classifing_fc'):
                     self.final_feature = tf.reduce_mean(final_feature, [1, 2])
                     print('final_featrue is ', self.final_feature)
@@ -566,17 +601,23 @@ class networks_with_attrs:
         # return final_cross_entropy_mean, center_loss_mean * lambda_center_loss
 
         # build for the global and local branches
-        global_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.gb_logits,
-                                                                                             labels=tf.squeeze(b_label,
-                                                                                                               axis=1)))
-        local_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.lb_logits,
-                                                                                            labels=tf.squeeze(b_label,
-                                                                                                              axis=1)))
+        global_cross_entropy = tf.Variable(0.0, trainable=False)
+        if self.global_branch_flag:
+            global_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.gb_logits,
+                                                                                                 labels=tf.squeeze(b_label,
+                                                                                                                   axis=1)))
+        local_cross_entropy = tf.Variable(0.0, trainable=False)
+        if self.local_branch_flag:
+            local_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.lb_logits,
+                                                                                                labels=tf.squeeze(b_label,
+                                                                                                                  axis=1)))
         if add_to_collection:
-            tf.add_to_collection(tf.GraphKeys.LOSSES, global_cross_entropy * lambda_global_branch)
+            if self.global_branch_flag:
+                tf.add_to_collection(tf.GraphKeys.LOSSES, global_cross_entropy * lambda_global_branch)
             tf.add_to_collection(tf.GraphKeys.LOSSES, center_loss_mean * lambda_center_loss)
             tf.add_to_collection(tf.GraphKeys.LOSSES, final_cross_entropy_mean)
-            tf.add_to_collection(tf.GraphKeys.LOSSES, local_cross_entropy * lambda_local_branch)
+            if self.local_branch_flag:
+                tf.add_to_collection(tf.GraphKeys.LOSSES, local_cross_entropy * lambda_local_branch)
             return final_cross_entropy_mean, center_loss_mean * lambda_center_loss, \
                    global_cross_entropy * lambda_global_branch, local_cross_entropy * lambda_local_branch, \
                    self.update_centers(tf.squeeze(b_label, axis=1), alpha=alpha)

@@ -380,7 +380,7 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/res50_original_wo_centerloss/model.ckpt-9885',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/res50_original_wo_centerloss/model.ckpt-3916',
         'netname': 'res50',
         'stage_name': 'test',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',

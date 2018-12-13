@@ -27,7 +27,7 @@ tf.app.flags.DEFINE_float('gpu_memory_fraction', -1,
 
 tf.app.flags.DEFINE_integer('batch_size', None, 'The number of samples in each batch.')
 tf.app.flags.DEFINE_integer('num_gpus', 1, 'The number of gpus can be used.')
-tf.app.flags.DEFINE_integer('max_number_of_steps', 10000, 'The maximum number of training steps.')
+tf.app.flags.DEFINE_integer('max_number_of_steps', 20000, 'The maximum number of training steps.')
 tf.app.flags.DEFINE_integer('log_every_n_steps', 1, 'log frequency')
 tf.app.flags.DEFINE_bool("ignore_missing_vars", True, '')
 tf.app.flags.DEFINE_string('checkpoint_exclude_scopes', ['fuse_multi_phase', 'pixel_seg', 'multiscale*'],
@@ -75,9 +75,16 @@ tf.app.flags.DEFINE_boolean(
     'pretrained_flag', True, 'the flag represent whether use the pretrained model'
 )
 tf.app.flags.DEFINE_boolean(
-    'centerloss_flag', True, 'the flag represent whether use the pretrained model'
+    'centerloss_flag', True, 'the flag represent whether use the center loss model'
 )
 tf.app.flags.DEFINE_integer('VALIDATION_INTERVAL', 10, 'the interval of validation')
+tf.app.flags.DEFINE_boolean(
+    'global_branch_flag', True, 'the flag represent wheather use the global branch flag'
+)
+tf.app.flags.DEFINE_boolean(
+    'local_branch_flag', True, 'the flag represent wheather use the local branch flag'
+)
+
 FLAGS = tf.app.flags.FLAGS
 
 checkpoints_names = {
@@ -381,7 +388,9 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
         # build model and loss
         train_net = networks_with_attrs(b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_attrs,
                                         FLAGS.netname, True, num_classes=config.num_classes, batch_size=FLAGS.batch_size,
-                                        use_attribute_flag=FLAGS.attribute_flag, clstm_flag=FLAGS.clstm_flag)
+                                        use_attribute_flag=FLAGS.attribute_flag, clstm_flag=FLAGS.clstm_flag,
+                                        global_branch_flag=FLAGS.global_branch_flag,
+                                        local_branch_flag=FLAGS.local_branch_flag)
         # ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
         centerloss_lambda = 1.0
         if not FLAGS.centerloss_flag:
@@ -393,13 +402,16 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
         val_net = networks_with_attrs(val_b_nc_roi, val_b_art_roi, val_b_pv_roi, val_b_nc_patch, val_b_art_patch,
                                       val_b_pv_patch, val_b_attrs, FLAGS.netname, False, config.num_classes,
                                       batch_size=FLAGS.batch_size, use_attribute_flag=FLAGS.attribute_flag,
-                                      clstm_flag=FLAGS.clstm_flag)
+                                      clstm_flag=FLAGS.clstm_flag, global_branch_flag=FLAGS.global_branch_flag,
+                                      local_branch_flag=FLAGS.local_branch_flag)
         val_ce_loss, val_center_loss, val_global_loss, val_local_loss = val_net.build_loss(val_b_label,
                                                                                            lambda_center_loss=centerloss_lambda,
                                                                                            add_to_collection=False)
 
         losses = tf.get_collection(tf.GraphKeys.LOSSES)
-        assert len(losses) == 4
+        # final logit + center loss + local + global
+        losses_num = 2 + int(FLAGS.global_branch_flag) + int(FLAGS.local_branch_flag)
+        assert len(losses) == losses_num
         total_clone_loss = tf.add_n(losses)
         pixel_link_loss += total_clone_loss
 
