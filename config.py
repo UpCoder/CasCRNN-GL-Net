@@ -18,7 +18,7 @@ TYPENAMES2LABEL = {
     'HEM': 3,
     'METS': 4
 }
-TRAIN_GPU_ID = '2'
+TRAIN_GPU_ID = '3'
 val_batch_size = 32
 patch_size = 5
 CHECKPOINT_DIR = '/home/dl-box/ld/PycharmProjects/GL_BD_LSTM/checkpoints'

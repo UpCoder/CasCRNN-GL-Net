@@ -84,7 +84,7 @@ def generate_features_labels(data_dir):
     return train_features, train_labels, val_features, val_labels, test_features, test_labels
 
 
-def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/res50_original_wo_pretrained',
+def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/res50_original',
                  basename='res50'):
     from dataset.medicalImage import resolve_attribute_file
     import config
@@ -114,7 +114,7 @@ def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalIm
         attrs = np.concatenate([nc_attrs, art_attrs, pv_attrs], axis=1)
         return labels, slice_names, attrs
 
-    def _load_label(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0', stage_name='train'):
+    def _load_label(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1', stage_name='train'):
         print(os.path.join(dataset_dir, stage_name))
         slice_names = os.listdir(os.path.join(dataset_dir, stage_name))
         labels = []
@@ -163,13 +163,13 @@ if __name__ == '__main__':
     # test_features = test_data['features']
     # test_labels = test_data['labels']
     # SVM
-    # predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, test_features, test_labels,
-    #                                                    adjust_parameters=True)
-    # # use default parameters
-    # predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
-    #                               # C=1.0, gamma='auto')
-    #                               C=c_params, gamma=g_params)
-    predicted_label = np.argmax(test_features, axis=1)
+    predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, test_features, test_labels,
+                                                       adjust_parameters=True)
+    # use default parameters
+    predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,
+                                  # C=1.0, gamma='auto')
+                                  C=c_params, gamma=g_params)
+    # predicted_label = np.argmax(test_features, axis=1)
     # print 'ACC is ', acc
     calculate_acc_error(predicted_label, test_labels)
     for idx in range(len(test_labels)):
