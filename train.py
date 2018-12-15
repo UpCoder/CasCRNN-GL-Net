@@ -84,7 +84,9 @@ tf.app.flags.DEFINE_boolean(
 tf.app.flags.DEFINE_boolean(
     'local_branch_flag', True, 'the flag represent wheather use the local branch flag'
 )
-
+tf.app.flags.DEFINE_boolean(
+    'decay_learning_rate_flag', False, 'the flag represent whether use the decay strategy to control the learning rate'
+)
 FLAGS = tf.app.flags.FLAGS
 
 checkpoints_names = {
@@ -117,7 +119,7 @@ def config_initialization():
     train_dataset = tfrecords_to_medicalimage.get_split(FLAGS.dataset_split_name, FLAGS.dataset_dir, FLAGS.file_pattern, None, FLAGS.attribute_flag)
     # dataset = dataset_factory.get_dataset(FLAGS.dataset_name, FLAGS.dataset_split_name, FLAGS.dataset_dir)
     config.print_config(FLAGS, train_dataset)
-    val_dataset_dir = os.path.join(os.path.dirname(FLAGS.dataset_dir), 'val_tfrecords')
+    val_dataset_dir = os.path.join(os.path.dirname(FLAGS.dataset_dir), 'test_tfrecords')
     if not os.path.exists(val_dataset_dir):
         val_dataset_dir = os.path.join(os.path.dirname(FLAGS.dataset_dir), 'val')
     if not os.path.exists(val_dataset_dir):
@@ -135,8 +137,8 @@ def create_dataset_batch_queue_with_attributes(dataset, prefix='train'):
             provider = slim.dataset_data_provider.DatasetDataProvider(
                 dataset,
                 num_readers=FLAGS.num_readers,
-                common_queue_capacity=1000 * FLAGS.batch_size,
-                common_queue_min=700 * FLAGS.batch_size,
+                common_queue_capacity=100 * FLAGS.batch_size,
+                common_queue_min=70 * FLAGS.batch_size,
                 shuffle=True)
             [nc_roi, art_roi, pv_roi, nc_patch, art_patch, pv_patch, label, attrs] = provider.get(
                 ['nc_roi', 'art_roi', 'pv_roi', 'nc_patch', 'art_patch', 'pv_patch', 'label', 'attrs'])
@@ -271,7 +273,17 @@ def sum_gradients(clone_grads):
 def create_clones(batch_queue):
     with tf.device('/cpu:0'):
         global_step = slim.create_global_step()
-        learning_rate = tf.constant(FLAGS.learning_rate, name='learning_rate')
+        if not FLAGS.decay_learning_rate_flag:
+            print('execute constant learning rate')
+            learning_rate = tf.constant(FLAGS.learning_rate, name='learning_rate')
+        else:
+            print('execute decay learning rate')
+            starter_learning_rate = FLAGS.learning_rate
+            end_learning_rate = FLAGS.learning_rate / 10
+            decay_steps = 10000
+            learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step,
+                                                      decay_steps, end_learning_rate,
+                                                      power=0.5, name='learning_rate')
         optimizer = tf.train.MomentumOptimizer(learning_rate,
                                                momentum=FLAGS.momentum, name='Momentum')
 
@@ -368,9 +380,18 @@ def train_step_fn(sess, train_op, global_step, train_step_kwargs):
 
 def create_clones_with_attrs(train_batch_queue, val_batch_queue):
     with tf.device('/cpu:0'):
-
         global_step = slim.create_global_step()
-        learning_rate = tf.constant(FLAGS.learning_rate, name='learning_rate')
+        if not FLAGS.decay_learning_rate_flag:
+            print('execute constant learning rate')
+            learning_rate = tf.constant(FLAGS.learning_rate, name='learning_rate')
+        else:
+            print('execute decay learning rate')
+            starter_learning_rate = FLAGS.learning_rate
+            end_learning_rate = FLAGS.learning_rate / 50
+            decay_steps = 20000
+            learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step,
+                                                      decay_steps, end_learning_rate,
+                                                      power=0.5, name='learning_rate')
         optimizer = tf.train.MomentumOptimizer(learning_rate,
                                                momentum=FLAGS.momentum, name='Momentum')
 

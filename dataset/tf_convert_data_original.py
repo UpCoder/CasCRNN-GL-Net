@@ -50,6 +50,9 @@ tf.app.flags.DEFINE_string(
 tf.app.flags.DEFINE_boolean(
     'attribute_flag', False, 'the flag represent whether use the attribution'
 )
+tf.app.flags.DEFINE_integer(
+    'patch_size', 5, 'the size of patch'
+)
 
 
 def main(_):
@@ -57,10 +60,10 @@ def main(_):
         raise ValueError('You must supply the dataset directory with --dataset_dir')
     print('Dataset directory:', FLAGS.dataset_dir)
     print('Output directory:', FLAGS.output_dir)
-
+    print('the patch size is ', FLAGS.patch_size)
     if FLAGS.dataset_name == 'medicalimage':
         medicalimage_to_tfrecords_original.run(FLAGS.dataset_dir, FLAGS.output_dir, FLAGS.output_name,
-                                               stage_name=FLAGS.stage_name)
+                                               stage_name=FLAGS.stage_name, patch_size=FLAGS.patch_size)
     else:
         raise ValueError('Dataset [%s] was not recognized.' % FLAGS.dataset_name)
 

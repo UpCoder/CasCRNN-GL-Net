@@ -13,10 +13,9 @@ from dataset.convert2jpg import calculate_mask_attributes, extract_patches
 from config import RANDOM_SEED
 
 
-def generate_patches_with_attributions(dataset_dir, stage_name, shuffling=True):
+def generate_patches_with_attributions(dataset_dir, stage_name, shuffling=True, patch_size=5):
     cur_dataset_dir = os.path.join(dataset_dir, stage_name)
     slice_names = os.listdir(cur_dataset_dir)
-    patch_size = 5
     nc_rois = []
     art_rois = []
     pv_rois = []
@@ -115,11 +114,16 @@ def generate_patches_with_attributions(dataset_dir, stage_name, shuffling=True):
              np.expand_dims(art_roi_resized, axis=2)], axis=2)
         pv_roi_final = np.concatenate([np.expand_dims(pv_roi_resized, axis=2), np.expand_dims(pv_liver_resized, axis=2),
                                        np.expand_dims(pv_roi_resized, axis=2)], axis=2)
+        cur_nc_patches, cur_art_patches, cur_pv_patches = extract_patches(nc_roi_final, art_roi_final, pv_roi_final,
+                                                                          patch_size=patch_size)
         print('nc mean is ', nc_roi_final.mean((0, 1)))
         print('art mean is ', art_roi_final.mean((0, 1)))
         print('pv mean is ', pv_roi_final.mean((0, 1)))
-        cur_nc_patches, cur_art_patches, cur_pv_patches = extract_patches(nc_roi_final, art_roi_final, pv_roi_final,
-                                                                          patch_size=patch_size)
+        print(
+        'size of roi is ', np.shape(nc_roi_final), np.shape(art_roi_final), np.shape(pv_roi_final), len(cur_nc_patches))
+        if len(cur_nc_patches) == 0:
+            print('the number of patches is zero')
+            assert False
         nc_patches.extend(cur_nc_patches)
         art_patches.extend(cur_art_patches)
         pv_patches.extend(cur_pv_patches)
@@ -256,7 +260,8 @@ class Generate_Batch_Data_with_attributions:
 
 
 def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
-                                         labels, netname, model_path, using_attribute_flag=True, using_clstm_flag=True):
+                                         labels, netname, model_path, using_attribute_flag=True, using_clstm_flag=True,
+                                         global_branch_flag=True, local_branch_flag=True):
     nc_roi_placeholder = tf.placeholder(tf.float32,
                                         [None, config.ROI_IMAGE_HEIGHT, config.ROI_IMAGE_WIDTH, 3],
                                         name='nc_roi_placeholder')
@@ -282,8 +287,9 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
     net = networks_with_attrs(nc_roi_placeholder, art_roi_placeholder, pv_roi_placeholder, nc_patch_placeholder,
                               art_patch_placeholder, pv_patch_placeholder, attrs_placeholder, base_name=netname,
-                              is_training=True, num_classes=config.num_classes, batch_size=batch_size_placeholder,
-                              use_attribute_flag=using_attribute_flag, clstm_flag=using_clstm_flag)
+                              is_training=False, num_classes=config.num_classes, batch_size=batch_size_placeholder,
+                              use_attribute_flag=using_attribute_flag, clstm_flag=using_clstm_flag,
+                              global_branch_flag=global_branch_flag, local_branch_flag=local_branch_flag)
     logits = net.logits
     ce_loss, center_loss, gb_ce, lb_ce = net.build_loss(batch_label_placeholder, add_to_collection=False)
     predictions = []
@@ -346,12 +352,15 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/res50_original_wo_centerloss/model.ckpt-3916',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/0/res50_original_decay_lr/model.ckpt-8828',
         'netname': 'res50',
         'stage_name': 'test',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
         'attribute_flag': True,
         'clstm_flag': True,
+        'global_flag': True,
+        'local_flag': True,
+        'patch_size': 7,
         'gpu_id': '3'
     }
     # 5532
@@ -360,11 +369,13 @@ if __name__ == '__main__':
         generate_patches_with_attributions(
             restore_paras['dataset_dir'],
             restore_paras['stage_name'],
-            True)
+            shuffling=True,
+            patch_size=restore_paras['patch_size'])
 
     evulate_imgs_batch_with_attributions(
         nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
         labels, model_path=restore_paras['model_path'], netname=restore_paras['netname'],
-        using_attribute_flag=restore_paras['attribute_flag'], using_clstm_flag=restore_paras['clstm_flag']
+        using_attribute_flag=restore_paras['attribute_flag'], using_clstm_flag=restore_paras['clstm_flag'],
+        global_branch_flag = restore_paras['global_flag'], local_branch_flag = restore_paras['local_flag']
     )
 

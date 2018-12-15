@@ -167,7 +167,7 @@ def _get_output_filename(output_dir, name, idx):
     return '%s/%s_%03d.tfrecord' % (output_dir, name, idx)
 
 
-def run(dataset_dir, output_dir, name='voc_train', shuffling=True, stage_name='train'):
+def run(dataset_dir, output_dir, name='voc_train', shuffling=True, stage_name='train', patch_size=5):
     """Runs the conversion operation.
 
     Args:
@@ -181,7 +181,6 @@ def run(dataset_dir, output_dir, name='voc_train', shuffling=True, stage_name='t
     # Dataset filenames, and shuffling.
     cur_dataset_dir = os.path.join(dataset_dir, stage_name)
     slice_names = os.listdir(cur_dataset_dir)
-    patch_size = 5
     nc_rois= []
     art_rois = []
     pv_rois= []
