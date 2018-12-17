@@ -36,7 +36,7 @@ tf.app.flags.DEFINE_string('checkpoint_exclude_scopes', ['fuse_multi_phase', 'pi
 # =========================================================================== #
 # Optimizer configs.
 # =========================================================================== #
-tf.app.flags.DEFINE_float('learning_rate', 0.001, 'learning rate.')
+tf.app.flags.DEFINE_float('learning_rate', 0.0001, 'learning rate.')
 tf.app.flags.DEFINE_float('momentum', 0.9, 'The momentum for the MomentumOptimizer')
 tf.app.flags.DEFINE_float('weight_decay', 0.0001, 'The weight decay on the model weights.')
 tf.app.flags.DEFINE_bool('using_moving_average', True, 'Whether to use ExponentionalMovingAverage')

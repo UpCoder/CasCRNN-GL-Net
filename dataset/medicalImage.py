@@ -842,6 +842,23 @@ def cqq_record_labeled_file(dataset_dir, save_path):
         writer.writerows(recorded_list)
 
 
+def static_dataset_distribution(dataset_dir):
+    '''
+    统计数据分布
+    :return:
+    '''
+    res_dict = {}
+    names = os.listdir(dataset_dir)
+    for name in names:
+        if name.startswith('.DS'):
+            continue
+        class_idx = int(name[-1])
+        if class_idx in res_dict.keys():
+            res_dict[class_idx] += 1
+        else:
+            res_dict[class_idx] = 1
+    print res_dict
+
 if __name__ == '__main__':
     # for phasename in ['NC', 'ART', 'PV']:
     #     convert_dicomseries2mhd(
@@ -874,7 +891,16 @@ if __name__ == '__main__':
 
     # mv_uncertain('/资料/数据集/MICCAI2018/Slices/crossvalidation/0',
     #              '/资料/数据集/MICCAI2018/Slices/crossvalidation/0/uncertain')
-    cqq_record_labeled_file(
-        '/media/give/Chuckie/ld/dataset/MedicalImage/Category',
-        '/media/give/Chuckie/ld/dataset/MedicalImage/Category/full_labeled.csv',
-    )
+    # cqq_record_labeled_file(
+    #     '/media/give/Chuckie/ld/dataset/MedicalImage/Category',
+    #     '/media/give/Chuckie/ld/dataset/MedicalImage/Category/full_labeled.csv',
+    # )
+
+    dataset_dir = '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited'
+    for dataset_name in ['0', '1']:
+        for sub_dataset in ['train', 'val', 'test']:
+            cur_dataset_dir = os.path.join(dataset_dir, dataset_name, sub_dataset)
+            print dataset_name, sub_dataset
+            static_dataset_distribution(
+                cur_dataset_dir
+            )
