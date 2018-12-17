@@ -255,12 +255,18 @@ class networks:
             loss = tf.reduce_sum((features - centers_batch) ** 2, [1])
 
             return loss
+        # assign the weight
+        gt_tensor = tf.cast(b_label, tf.int32)
+        class_weights = tf.constant([2.0, 2.0, 2.0, 2.0, 1.0])
+        weights = tf.gather(class_weights, gt_tensor)
         print('build the loss')
         print('b_label is ', b_label)
         print('b_label', tf.squeeze(b_label, axis=1))
         print('logits is ', self.logits)
-        final_cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
-                                                                             labels=tf.squeeze(b_label, axis=1))
+        # final_cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
+        #                                                                      labels=tf.squeeze(b_label, axis=1))
+        final_cross_entropy = tf.losses.sparse_softmax_cross_entropy(labels=tf.squeeze(b_label, axis=1),
+                                                                     logits=self.logits, weights=weights)
         final_cross_entropy_mean = tf.reduce_mean(final_cross_entropy)
         print('the final cross entropy mean is ', final_cross_entropy_mean)
 
@@ -272,13 +278,20 @@ class networks:
         # return final_cross_entropy_mean, center_loss_mean * lambda_center_loss
 
         # build for the global and local branches
-        global_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.gb_logits,
-                                                                                             labels=tf.squeeze(b_label,
-                                                                                                               axis=1)))
+        # global_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.gb_logits,
+        #                                                                                      labels=tf.squeeze(b_label,
+        #                                                                                                        axis=1)))
+        global_cross_entropy = tf.reduce_mean(
+            tf.losses.sparse_softmax_cross_entropy(logits=self.gb_logits, labels=tf.squeeze(b_label, axis=1),
+                                                   weights=weights))
 
-        local_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.lb_logits,
-                                                                                            labels=tf.squeeze(b_label,
-                                                                                                              axis=1)))
+        # local_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.lb_logits,
+        #                                                                                     labels=tf.squeeze(b_label,
+        #                                                                                                       axis=1)))
+
+        local_cross_entropy = tf.reduce_mean(
+            tf.losses.sparse_softmax_cross_entropy(logits=self.lb_logits, weights=weights,
+                                                   labels=tf.squeeze(b_label, axis=1)))
 
         if add_to_collection:
             tf.add_to_collection(tf.GraphKeys.LOSSES, local_cross_entropy * lambda_local_branch)
@@ -585,12 +598,21 @@ class networks_with_attrs:
             loss = tf.reduce_sum((features - centers_batch) ** 2, [1])
 
             return loss
+
+        gt_tensor = tf.cast(b_label, tf.int32)
+        # class_weights = tf.constant([2.0, 2.0, 2.0, 2.0, 1.0])
+        class_weights = tf.constant([1.0, 1.0, 1.0, 1.0, 1.0])
+        weights = tf.gather(class_weights, gt_tensor)
         print('build the loss')
         print('b_label is ', b_label)
         print('b_label', tf.squeeze(b_label, axis=1))
         print('logits is ', self.logits)
-        final_cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
-                                                                             labels=tf.squeeze(b_label, axis=1))
+        # final_cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
+        #                                                                      labels=tf.squeeze(b_label, axis=1))
+        # final_cross_entropy_mean = tf.reduce_mean(final_cross_entropy)
+        final_cross_entropy = tf.losses.sparse_softmax_cross_entropy(labels=tf.squeeze(b_label, axis=1),
+                                                                     loss_collection=None, logits=self.logits,
+                                                                     weights=weights)
         final_cross_entropy_mean = tf.reduce_mean(final_cross_entropy)
         print('the final cross entropy mean is ', final_cross_entropy_mean)
 
@@ -598,19 +620,24 @@ class networks_with_attrs:
         center_loss_mean = tf.reduce_mean(center_loss)
         print('center_loss_mean is ', center_loss_mean)
 
-        # return final_cross_entropy_mean, center_loss_mean * lambda_center_loss
-
         # build for the global and local branches
         global_cross_entropy = tf.Variable(0.0, trainable=False)
         if self.global_branch_flag:
-            global_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.gb_logits,
-                                                                                                 labels=tf.squeeze(b_label,
-                                                                                                                   axis=1)))
+            # global_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.gb_logits,
+            #                                                                                      labels=tf.squeeze(b_label,
+            #                                                                                       axis=1)))
+
+            global_cross_entropy = tf.reduce_mean(
+                tf.losses.sparse_softmax_cross_entropy(logits=self.gb_logits, labels=tf.squeeze(b_label, axis=1),
+                                                       weights=weights, loss_collection=None,))
         local_cross_entropy = tf.Variable(0.0, trainable=False)
         if self.local_branch_flag:
-            local_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.lb_logits,
-                                                                                                labels=tf.squeeze(b_label,
-                                                                                                                  axis=1)))
+            # local_cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.lb_logits,
+            #                                                                                     labels=tf.squeeze(b_label,
+            #                                                                                                 axis=1)))
+            local_cross_entropy = tf.reduce_mean(
+                tf.losses.sparse_softmax_cross_entropy(logits=self.lb_logits, weights=weights, loss_collection=None,
+                                                       labels=tf.squeeze(b_label, axis=1)))
         if add_to_collection:
             if self.global_branch_flag:
                 tf.add_to_collection(tf.GraphKeys.LOSSES, global_cross_entropy * lambda_global_branch)

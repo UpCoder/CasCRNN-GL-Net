@@ -265,6 +265,11 @@ def run(dataset_dir, output_dir, name='voc_train', shuffling=True, stage_name='t
         nc_liver = np.asarray(nc_liver, np.float32)
         art_liver = np.asarray(art_liver, np.float32)
         pv_liver = np.asarray(pv_liver, np.float32)
+        # 避免因为patch size过大，而导致patch的个数为0
+        if target_h < patch_size:
+            target_h = patch_size + 1
+        if target_w < patch_size:
+            target_w = patch_size + 1
         nc_roi_resized = cv2.resize(nc_roi_img, (target_h, target_w))
         art_roi_resized = cv2.resize(art_roi_img, (target_h, target_w))
         pv_roi_resized = cv2.resize(pv_roi_img, (target_h, target_w))

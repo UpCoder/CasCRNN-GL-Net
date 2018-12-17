@@ -36,7 +36,7 @@ tf.app.flags.DEFINE_string('checkpoint_exclude_scopes', ['fuse_multi_phase', 'pi
 # =========================================================================== #
 # Optimizer configs.
 # =========================================================================== #
-tf.app.flags.DEFINE_float('learning_rate', 0.0001, 'learning rate.')
+tf.app.flags.DEFINE_float('learning_rate', 0.001, 'learning rate.')
 tf.app.flags.DEFINE_float('momentum', 0.9, 'The momentum for the MomentumOptimizer')
 tf.app.flags.DEFINE_float('weight_decay', 0.0001, 'The weight decay on the model weights.')
 tf.app.flags.DEFINE_bool('using_moving_average', True, 'Whether to use ExponentionalMovingAverage')
@@ -388,7 +388,7 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
             print('execute decay learning rate')
             starter_learning_rate = FLAGS.learning_rate
             end_learning_rate = FLAGS.learning_rate / 50
-            decay_steps = 20000
+            decay_steps = 15000
             learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step,
                                                       decay_steps, end_learning_rate,
                                                       power=0.5, name='learning_rate')
@@ -432,6 +432,10 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
         losses = tf.get_collection(tf.GraphKeys.LOSSES)
         # final logit + center loss + local + global
         losses_num = 2 + int(FLAGS.global_branch_flag) + int(FLAGS.local_branch_flag)
+        if len(losses) != losses_num:
+            print('the losses is ', len(losses))
+            print(losses)
+            print('the lossnum is ', losses_num)
         assert len(losses) == losses_num
         total_clone_loss = tf.add_n(losses)
         pixel_link_loss += total_clone_loss
@@ -534,7 +538,7 @@ def train(train_op, train_step_kwargs=None):
     #                               ignore_missing_vars=FLAGS.ignore_missing_vars,
     #                               checkpoint_exclude_scopes=FLAGS.checkpoint_exclude_scopes)
     saver = tf.train.Saver(max_to_keep=500, write_version=2)
-    save_interval_secs = 300
+    save_interval_secs = 100
     if train_step_kwargs is None:
         slim.learning.train(
             train_op,

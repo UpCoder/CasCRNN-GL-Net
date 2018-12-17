@@ -100,6 +100,10 @@ def generate_patches_with_attributions(dataset_dir, stage_name, shuffling=True, 
         nc_liver = np.asarray(nc_liver, np.float32)
         art_liver = np.asarray(art_liver, np.float32)
         pv_liver = np.asarray(pv_liver, np.float32)
+        if target_h < patch_size:
+            target_h = patch_size + 1
+        if target_w < patch_size:
+            target_w = patch_size + 1
         nc_roi_resized = cv2.resize(nc_roi_img, (target_h, target_w))
         art_roi_resized = cv2.resize(art_roi_img, (target_h, target_w))
         pv_roi_resized = cv2.resize(pv_roi_img, (target_h, target_w))
@@ -352,16 +356,16 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/0/res50_original_decay_lr/model.ckpt-8828',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/res50_original/model.ckpt-1615',
         'netname': 'res50',
         'stage_name': 'test',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
         'attribute_flag': True,
         'clstm_flag': True,
         'global_flag': True,
         'local_flag': True,
-        'patch_size': 7,
-        'gpu_id': '3'
+        'patch_size': 5,
+        'gpu_id': '1'
     }
     # 5532
     os.environ['CUDA_VISIBLE_DEVICES'] = restore_paras['gpu_id']
@@ -376,6 +380,6 @@ if __name__ == '__main__':
         nc_rois, art_rois, pv_rois, nc_patches, art_patches, pv_patches, attrs,
         labels, model_path=restore_paras['model_path'], netname=restore_paras['netname'],
         using_attribute_flag=restore_paras['attribute_flag'], using_clstm_flag=restore_paras['clstm_flag'],
-        global_branch_flag = restore_paras['global_flag'], local_branch_flag = restore_paras['local_flag']
+        global_branch_flag=restore_paras['global_flag'], local_branch_flag=restore_paras['local_flag']
     )
 

@@ -236,6 +236,10 @@ def generate_roi_feature_with_attributions(cur_dataset_dir, slice_name, patch_si
     elif nc_size >= art_size and nc_size >= pv_size:
         target_h = nc_h
         target_w = nc_w
+    if target_h < patch_size:
+        target_h = patch_size + 1
+    if target_w < patch_size:
+        target_w = patch_size + 1
     nc_roi_img = np.asarray(nc_roi_img, np.float32)
     art_roi_img = np.asarray(art_roi_img, np.float32)
     pv_roi_img = np.asarray(pv_roi_img, np.float32)
@@ -409,16 +413,16 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/0/res50_original_decay_lr/model.ckpt-8828',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/3x3/1/res50_original_decay_lr/model.ckpt-7672',
         'netname': 'res50',
         'stage_name': 'test',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
-        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/7x7/res50_original_decay_lr',
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
+        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/3x3/res50_original_decay_lr',
         'attribute_flag': True,
         'clstm_flag': True,
         'global_flag': True,
         'local_flag': True,
-        'patch_size': 7,
+        'patch_size': 3,
         'gpu_id': '3'
     }
     # 0 9935
