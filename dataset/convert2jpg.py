@@ -21,14 +21,18 @@ def MICCAI2018_Iterator(image_dir, execute_func, *parameters):
             execute_func(cur_slice_dir, sub_name, *parameters)
 
 
-def extract_patches(nc_roi, art_roi, pv_roi, patch_size):
+def extract_patches(nc_roi, art_roi, pv_roi, patch_size, patch_step=None):
     width, height, _ = np.shape(nc_roi)
     nc_patches = []
     art_patches = []
     pv_patches = []
-    patch_step = 1
-    if width * height >= 400:
-        patch_step = int(math.sqrt(width * height / 100))
+    # eplison = 100
+    # 400 / 100
+    eplison = 100
+    if patch_step is None:
+        patch_step = 1
+        if width * height >= eplison:
+            patch_step = int(math.sqrt(width * height / eplison))
     for i in range(patch_size / 2, width - patch_size / 2, patch_step):
         for j in range(patch_size / 2, height - patch_size / 2, patch_step):
             cur_nc_patch = nc_roi[i - patch_size / 2:i + patch_size / 2 + 1,

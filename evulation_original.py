@@ -355,8 +355,35 @@ def evulate_imgs_batch_with_attributions(nc_rois, art_rois, pv_rois, nc_patches,
 
 
 if __name__ == '__main__':
+    # about alpha
+    # 0.75/0 1272
+    # 0.75/1 1019
+    # 1.00/0 2361
+    # 1.00/1 2100 89
+    # 1.00/1 2018 81
+    # 0.25/0 1054 88
+    # 0.25/0 1136 88
+    # 0.25/1 5782 86
+    # 0.0/0 6774 78
+    # 0.0/1 7148 89
+    # 0.0/1 6579 87
+    # 0.0/1 6172 86
+    # 0.1/0 1294 87
+    # 0.1/1 1621 85
+    # 0.05/0 1292 80
+    # 0.05/1 1344 83
+
+    # lambda+alpha(0.25)
+    # 1.0+0.25/0 1054 88
+    # 1.0+0.25/1 5782 86
+    # 0.5+0.25/0 1925 89
+    # 0.5+0.25/1 1741 81
+    # 0.25+0.25/0 1052 78
+    # 0.25+0.25/1 1533 86
+    # 0.0+0.25/0 642 75
+    # 0.0+0.25/1 965 78
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/1/res50_original/model.ckpt-1615',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/1/res50_original_lambda0.75/model.ckpt-1535',
         'netname': 'res50',
         'stage_name': 'test',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
@@ -364,7 +391,7 @@ if __name__ == '__main__':
         'clstm_flag': True,
         'global_flag': True,
         'local_flag': True,
-        'patch_size': 5,
+        'patch_size': 7,
         'gpu_id': '1'
     }
     # 5532

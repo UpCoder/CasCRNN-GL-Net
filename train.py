@@ -87,12 +87,20 @@ tf.app.flags.DEFINE_boolean(
 tf.app.flags.DEFINE_boolean(
     'decay_learning_rate_flag', False, 'the flag represent whether use the decay strategy to control the learning rate'
 )
+tf.app.flags.DEFINE_float(
+    'alpha', 0.25, 'control the learning rate for center loss'
+)
+tf.app.flags.DEFINE_float(
+    'intra_lambda', 1.0, 'control the learning rate for center loss'
+)
 FLAGS = tf.app.flags.FLAGS
 
 checkpoints_names = {
     'res50': 'resnet_v2_50.ckpt',
-    'vgg16': 'vgg_16.ckpt'
+    'vgg16': 'vgg_16.ckpt',
+    'dense121': 'tf-densenet121.ckpt'
 }
+
 
 
 def config_initialization():
@@ -270,82 +278,82 @@ def sum_gradients(clone_grads):
     return averaged_grads
 
 
-def create_clones(batch_queue):
-    with tf.device('/cpu:0'):
-        global_step = slim.create_global_step()
-        if not FLAGS.decay_learning_rate_flag:
-            print('execute constant learning rate')
-            learning_rate = tf.constant(FLAGS.learning_rate, name='learning_rate')
-        else:
-            print('execute decay learning rate')
-            starter_learning_rate = FLAGS.learning_rate
-            end_learning_rate = FLAGS.learning_rate / 10
-            decay_steps = 10000
-            learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step,
-                                                      decay_steps, end_learning_rate,
-                                                      power=0.5, name='learning_rate')
-        optimizer = tf.train.MomentumOptimizer(learning_rate,
-                                               momentum=FLAGS.momentum, name='Momentum')
-
-        tf.summary.scalar('learning_rate', learning_rate)
-    # place clones
-    pixel_link_loss = 0  # for summary only
-    gradients = []
-    # for clone_idx, gpu in enumerate(config.gpus):
-        # do_summary = clone_idx == 0  # only summary on the first clone
-        # reuse = clone_idx > 0
-    with tf.variable_scope(tf.get_variable_scope()):
-        b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_label = batch_queue.dequeue()
-        # build model and loss
-        net = networks(b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch,
-                       FLAGS.netname, True, num_classes=config.num_classes, batch_size=FLAGS.batch_size)
-        # ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
-        ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
-
-        # gather losses
-        losses = tf.get_collection(tf.GraphKeys.LOSSES)
-        assert len(losses) == 4
-        total_clone_loss = tf.add_n(losses)
-        pixel_link_loss += total_clone_loss
-
-        # gather regularization loss and add to clone_0 only
-        # if clone_idx == 0:
-        regularization_loss = tf.add_n(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
-        total_clone_loss = total_clone_loss + regularization_loss
-
-        # compute clone gradients
-        clone_gradients = optimizer.compute_gradients(total_clone_loss)
-        gradients.append(clone_gradients)
-
-    tf.summary.scalar('final cross entropy', ce_loss)
-    tf.summary.scalar('center loss', center_loss)
-    tf.summary.scalar('regularization_loss', regularization_loss)
-    tf.summary.scalar('global cross entropy', global_loss)
-    tf.summary.scalar('local cross entropy', local_loss)
-
-    # add all gradients together
-    # note that the gradients do not need to be averaged, because the average operation has been done on loss.
-    averaged_gradients = sum_gradients(gradients)
-
-    apply_grad_op = optimizer.apply_gradients(averaged_gradients, global_step=global_step)
-
-    train_ops = [apply_grad_op]
-
-    bn_update_op = util.tf.get_update_op()
-    if bn_update_op is not None:
-        train_ops.append(bn_update_op)
-
-    # moving average
-    if FLAGS.using_moving_average:
-        tf.logging.info('using moving average in training, \
-        with decay = %f' % (FLAGS.moving_average_decay))
-        ema = tf.train.ExponentialMovingAverage(FLAGS.moving_average_decay)
-        ema_op = ema.apply(tf.trainable_variables())
-        with tf.control_dependencies([apply_grad_op]):  # ema after updating
-            train_ops.append(tf.group(ema_op))
-
-    train_op = control_flow_ops.with_dependencies(train_ops, pixel_link_loss, name='train_op')
-    return train_op
+# def create_clones(batch_queue):
+#     with tf.device('/cpu:0'):
+#         global_step = slim.create_global_step()
+#         if not FLAGS.decay_learning_rate_flag:
+#             print('execute constant learning rate')
+#             learning_rate = tf.constant(FLAGS.learning_rate, name='learning_rate')
+#         else:
+#             print('execute decay learning rate')
+#             starter_learning_rate = FLAGS.learning_rate
+#             end_learning_rate = FLAGS.learning_rate / 100
+#             decay_steps = 40000
+#             learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step,
+#                                                       decay_steps, end_learning_rate,
+#                                                       power=0.5, name='learning_rate')
+#         optimizer = tf.train.MomentumOptimizer(learning_rate,
+#                                                momentum=FLAGS.momentum, name='Momentum')
+#
+#         tf.summary.scalar('learning_rate', learning_rate)
+#     # place clones
+#     pixel_link_loss = 0  # for summary only
+#     gradients = []
+#     # for clone_idx, gpu in enumerate(config.gpus):
+#         # do_summary = clone_idx == 0  # only summary on the first clone
+#         # reuse = clone_idx > 0
+#     with tf.variable_scope(tf.get_variable_scope()):
+#         b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch, b_label = batch_queue.dequeue()
+#         # build model and loss
+#         net = networks(b_nc_roi, b_art_roi, b_pv_roi, b_nc_patch, b_art_patch, b_pv_patch,
+#                        FLAGS.netname, True, num_classes=config.num_classes, batch_size=FLAGS.batch_size)
+#         # ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
+#         ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
+#
+#         # gather losses
+#         losses = tf.get_collection(tf.GraphKeys.LOSSES)
+#         assert len(losses) == 4
+#         total_clone_loss = tf.add_n(losses)
+#         pixel_link_loss += total_clone_loss
+#
+#         # gather regularization loss and add to clone_0 only
+#         # if clone_idx == 0:
+#         regularization_loss = tf.add_n(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+#         total_clone_loss = total_clone_loss + regularization_loss
+#
+#         # compute clone gradients
+#         clone_gradients = optimizer.compute_gradients(total_clone_loss)
+#         gradients.append(clone_gradients)
+#
+#     tf.summary.scalar('final cross entropy', ce_loss)
+#     tf.summary.scalar('center loss', center_loss)
+#     tf.summary.scalar('regularization_loss', regularization_loss)
+#     tf.summary.scalar('global cross entropy', global_loss)
+#     tf.summary.scalar('local cross entropy', local_loss)
+#
+#     # add all gradients together
+#     # note that the gradients do not need to be averaged, because the average operation has been done on loss.
+#     averaged_gradients = sum_gradients(gradients)
+#
+#     apply_grad_op = optimizer.apply_gradients(averaged_gradients, global_step=global_step)
+#
+#     train_ops = [apply_grad_op]
+#
+#     bn_update_op = util.tf.get_update_op()
+#     if bn_update_op is not None:
+#         train_ops.append(bn_update_op)
+#
+#     # moving average
+#     if FLAGS.using_moving_average:
+#         tf.logging.info('using moving average in training, \
+#         with decay = %f' % (FLAGS.moving_average_decay))
+#         ema = tf.train.ExponentialMovingAverage(FLAGS.moving_average_decay)
+#         ema_op = ema.apply(tf.trainable_variables())
+#         with tf.control_dependencies([apply_grad_op]):  # ema after updating
+#             train_ops.append(tf.group(ema_op))
+#
+#     train_op = control_flow_ops.with_dependencies(train_ops, pixel_link_loss, name='train_op')
+#     return train_op
 
 
 def train_step_fn(sess, train_op, global_step, train_step_kwargs):
@@ -387,8 +395,8 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
         else:
             print('execute decay learning rate')
             starter_learning_rate = FLAGS.learning_rate
-            end_learning_rate = FLAGS.learning_rate / 50
-            decay_steps = 15000
+            end_learning_rate = FLAGS.learning_rate / 100
+            decay_steps = 30000
             learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step,
                                                       decay_steps, end_learning_rate,
                                                       power=0.5, name='learning_rate')
@@ -413,12 +421,14 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
                                         global_branch_flag=FLAGS.global_branch_flag,
                                         local_branch_flag=FLAGS.local_branch_flag)
         # ce_loss, center_loss, global_loss, local_loss = net.build_loss(b_label)
-        centerloss_lambda = 1.0
+        centerloss_lambda = FLAGS.intra_lambda
         if not FLAGS.centerloss_flag:
             print('do not use the center loss')
             centerloss_lambda = 0.0
+        print('intra_loss: alpha is ', FLAGS.alpha, 'lambda is ', centerloss_lambda)
         ce_loss, center_loss, global_loss, local_loss, center_update_op = train_net.build_loss(b_label,
-                                                                                               lambda_center_loss=centerloss_lambda)
+                                                                                               lambda_center_loss=centerloss_lambda,
+                                                                                               alpha=FLAGS.alpha)
         sc.reuse_variables()
         val_net = networks_with_attrs(val_b_nc_roi, val_b_art_roi, val_b_pv_roi, val_b_nc_patch, val_b_art_patch,
                                       val_b_pv_patch, val_b_attrs, FLAGS.netname, False, config.num_classes,
@@ -426,6 +436,7 @@ def create_clones_with_attrs(train_batch_queue, val_batch_queue):
                                       clstm_flag=FLAGS.clstm_flag, global_branch_flag=FLAGS.global_branch_flag,
                                       local_branch_flag=FLAGS.local_branch_flag)
         val_ce_loss, val_center_loss, val_global_loss, val_local_loss = val_net.build_loss(val_b_label,
+                                                                                           alpha=FLAGS.alpha,
                                                                                            lambda_center_loss=centerloss_lambda,
                                                                                            add_to_collection=False)
 
@@ -547,7 +558,7 @@ def train(train_op, train_step_kwargs=None):
             summary_op=summary_op,
             number_of_steps=FLAGS.max_number_of_steps,
             log_every_n_steps=FLAGS.log_every_n_steps,
-            save_summaries_secs=30,
+            save_summaries_secs=20,
             saver=saver,
             save_interval_secs=save_interval_secs,
             session_config=sess_config

@@ -17,5 +17,18 @@ def visualize_patch_size():
     plt.savefig('./' + 'patch_size.svg')
 
 
+def visualize_alpha():
+    alpha = [0.0, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0]
+    mean_value = [78.44, 82.10, 86.52, 87.75, 83.50, 82.88, 83.37]
+
+    plt.plot(alpha, mean_value)
+    plt.plot(alpha, mean_value, 'b+')
+    plt.xlabel('alpha')
+    plt.ylabel('accuracy(%)')
+    plt.ylim((70, 100))
+    plt.savefig('./' + 'alpha.svg')
+
+
 if __name__ == '__main__':
-    visualize_patch_size()
+    # visualize_patch_size()
+    visualize_alpha()

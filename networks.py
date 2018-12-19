@@ -2,7 +2,7 @@
 import tensorflow as tf
 from tensorflow.contrib.slim.nets import resnet_v1
 from tensorflow.contrib import slim
-from models.research.slim.nets import resnet_v2, vgg
+from models.research.slim.nets import resnet_v2, vgg, densenet_utils
 import config
 
 
@@ -394,6 +394,29 @@ class networks_with_attrs:
                             outputs, end_points = resnet_v2.resnet_v2_50(roi_inputs[phase_name], None,
                                                                          self.is_training, reuse=(phase_idx != 0),
                                                                          global_pool=False,)
+                            roi_outputs.append(end_points['final_feature'])
+        elif self.base_name == 'dense121':
+            if self.local_branch_flag:
+                with tf.variable_scope('patch_based'):
+                    for phase_idx, phase_name in enumerate(phase_names_list):
+                        with slim.arg_scope(densenet_utils.densenet_arg_scope()):
+                            # with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
+                            print(phase_name, (phase_idx != 0))
+                            print('patch_inputs[phase_name] ', patch_inputs[phase_name])
+                            outputs, end_points = densenet_utils.densenet121(patch_inputs[phase_name], None,
+                                                                             is_training=self.is_training,
+                                                                             is_patch=True, reuse=(phase_idx != 0))
+                            print end_points.keys()
+                            patch_outputs.append(end_points['final_feature'])
+            if self.global_branch_flag:
+                with tf.variable_scope('roi_based'):
+                    for phase_idx, phase_name in enumerate(phase_names_list):
+                        with slim.arg_scope(densenet_utils.densenet_arg_scope()):
+                            # with slim.arg_scope([slim.conv2d, slim.fully_connected], reuse=(phase_idx != 0)):
+                            print phase_name, (phase_idx != 0)
+                            outputs, end_points = densenet_utils.densenet121(roi_inputs[phase_name], None,
+                                                                             is_training=self.is_training,
+                                                                             is_patch=False, reuse=(phase_idx != 0))
                             roi_outputs.append(end_points['final_feature'])
         else:
             print 'Keyword Error'

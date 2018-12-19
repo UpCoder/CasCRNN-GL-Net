@@ -687,7 +687,6 @@ def read_WC(dicom_dir):
     dicom_series = reader.GetGDCMSeriesFileNames(dicom_dir)
     single_dicom_path = dicom_series[0]
     header = pydicom.read_file(single_dicom_path)
-    # print(header.WindowCenter, header.WindowWidth)
     if isinstance(header.WindowCenter, list) and len(header.WindowCenter) != 0:
         return header.WindowCenter[0], header.WindowWidth[0]
     return header.WindowCenter, header.WindowWidth
@@ -859,6 +858,22 @@ def static_dataset_distribution(dataset_dir):
             res_dict[class_idx] = 1
     print res_dict
 
+
+def compute_edge(mask_path):
+    '''
+    计算边界
+    :return:
+    '''
+    mask_image = np.squeeze(read_mhd_image(mask_path))
+    mask_image = np.asarray(mask_image, np.uint8)
+    print np.shape(mask_image)
+    from medicalImage import fill_region
+    edge = cv2.Canny(mask_image, 1, 1)
+    edge = np.asarray(edge == 255, np.uint8)
+    edge_path = os.path.join(os.path.dirname(mask_path), os.path.basename(mask_path).split('.mhd')[0]+'_Edge.mhd')
+    save_mhd_image(np.asarray(edge, np.int32), edge_path)
+
+
 if __name__ == '__main__':
     # for phasename in ['NC', 'ART', 'PV']:
     #     convert_dicomseries2mhd(
@@ -896,11 +911,15 @@ if __name__ == '__main__':
     #     '/media/give/Chuckie/ld/dataset/MedicalImage/Category/full_labeled.csv',
     # )
 
-    dataset_dir = '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited'
-    for dataset_name in ['0', '1']:
-        for sub_dataset in ['train', 'val', 'test']:
-            cur_dataset_dir = os.path.join(dataset_dir, dataset_name, sub_dataset)
-            print dataset_name, sub_dataset
-            static_dataset_distribution(
-                cur_dataset_dir
-            )
+    # dataset_dir = '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited'
+    # for dataset_name in ['0', '1']:
+    #     for sub_dataset in ['train', 'val', 'test']:
+    #         cur_dataset_dir = os.path.join(dataset_dir, dataset_name, sub_dataset)
+    #         print dataset_name, sub_dataset
+    #         static_dataset_distribution(
+    #             cur_dataset_dir
+    #         )
+
+    compute_edge(
+        '/资料/数据集/MedicalImage/2631152_2778752_1_2_4/PV_Mask.mhd'
+    )

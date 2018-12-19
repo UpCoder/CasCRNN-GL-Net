@@ -175,7 +175,7 @@ def generate_roi_feature_with_attributions(cur_dataset_dir, slice_name, patch_si
                          batch_size_placeholder):
 
     cur_slice_dir = os.path.join(cur_dataset_dir, slice_name)
-
+    print('cur_slice_dir is ', cur_slice_dir)
     nc_img_path = glob(os.path.join(cur_slice_dir, 'NC_Image*.mhd'))[0]
     art_img_path = glob(os.path.join(cur_slice_dir, 'ART_Image*.mhd'))[0]
     pv_img_path = glob(os.path.join(cur_slice_dir, 'PV_Image*.mhd'))[0]
@@ -260,8 +260,9 @@ def generate_roi_feature_with_attributions(cur_dataset_dir, slice_name, patch_si
          np.expand_dims(art_roi_resized, axis=2)], axis=2)
     pv_roi_final = np.concatenate([np.expand_dims(pv_roi_resized, axis=2), np.expand_dims(pv_liver_resized, axis=2),
                                    np.expand_dims(pv_roi_resized, axis=2)], axis=2)
+    patch_step = 1
     cur_nc_patches, cur_art_patches, cur_pv_patches = extract_patches(nc_roi_final, art_roi_final, pv_roi_final,
-                                                                      patch_size=patch_size)
+                                                                      patch_size=patch_size, patch_step=patch_step)
 
     print('nc mean is ', nc_roi_final.mean((0, 1)))
     print('art mean is ', art_roi_final.mean((0, 1)))
@@ -302,15 +303,39 @@ def generate_roi_feature_with_attributions(cur_dataset_dir, slice_name, patch_si
         logits_v = sess.run(logits, feed_dict=feed_dict)
         logits_values.extend(np.argmax(logits_v, axis=1))
         if batch_count % 100 == 0:
-            print logits_values
+            print batch_count * config.val_batch_size, '/', len(nc_rois)
         batch_count += 1
         if epoch_end:
             break
     print logits_values
-    return logits_values, labels
+    count_idx = 0
+    label_map = np.zeros([target_h, target_w, 3], np.uint8)
+    label_rgb_mapping = {
+        0: [0, 200, 0],
+        1: [0, 0, 200],
+        2: [255, 0, 0],
+        3: [0, 255, 255],
+        4: [200, 200, 0]
+    }
+    for i in range(patch_size / 2, target_h - patch_size / 2, patch_step):
+        for j in range(patch_size / 2, target_w - patch_size / 2, patch_step):
+            label_map[i, j, :] = label_rgb_mapping[logits_values[count_idx]]
+            count_idx += 1
+            # cur_nc_patch = nc_roi[i - patch_size / 2:i + patch_size / 2 + 1,
+            #             j - patch_size / 2: j + patch_size / 2 + 1, :]
+            # cur_art_patch = art_roi[i - patch_size / 2:i + patch_size / 2 + 1,
+            #                j - patch_size / 2: j + patch_size / 2 + 1, :]
+            # cur_pv_patch = pv_roi[i - patch_size / 2:i + patch_size / 2 + 1,
+            #                j - patch_size / 2: j + patch_size / 2 + 1, :]
+            # nc_patches.append(cur_nc_patch)
+            # art_patches.append(cur_art_patch)
+            # pv_patches.append(cur_pv_patch)
+
+    # return logits_values, labels
+    return label_map
 
 
-def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path, label_save_path,
+def generate_roi_feature_dataset(cur_slice_dir, netname, model_path,
                                  using_attribute_flag=True, using_clstm_flag=True, global_branch_flag=True,
                                  local_branch_flag=True, patch_size=5):
     '''
@@ -361,86 +386,77 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
         print('restore from ', model_path)
         saver.restore(sess, model_path)
         batch_count = 0
-        print(dataset)
-        slice_names = os.listdir(dataset)
-        print(slice_names)
-        total_labels = []
-        total_predictions = []
-        roi_labels = []
-        for idx, slice_name in enumerate(slice_names):
-            if slice_name.startswith('.DS'):
-                continue
-            # if not slice_name.endswith('0'):
-            #     continue
-            print(slice_name, idx, ' / ', len(slice_names))
-            cur_data_dir = os.path.join(dataset, slice_name)
-            logits_values, sample_labels = generate_roi_feature_with_attributions(dataset, slice_name, patch_size,
-                                                                                  sess, logits, nc_roi_placeholder,
-                                                                                  art_roi_placeholder,
-                                                                                  pv_roi_placeholder,
-                                                                                  nc_patch_placeholder,
-                                                                                  art_patch_placeholder,
-                                                                                  pv_patch_placeholder,
-                                                                                  batch_attrs_placeholder,
-                                                                                  batch_size_placeholder)
-            total_labels.extend(sample_labels)
-            total_predictions.extend(logits_values)
-            roi_feature = np.asarray([0., 0., 0., 0., 0.], np.float32)
-            patch_num = len(logits_values) * 1.0
-            for value in np.unique(logits_values):
-                roi_feature[value] = np.sum(logits_values == value) * 1.0
-            roi_feature /= patch_num
-            roi_features.append(roi_feature)
-            print(slice_name[-1], ' logits_values is ', logits_values)
-            print('roi_feature is ', roi_feature)
-            roi_labels.append(int(slice_name[-1]))
-    print('the number of patches is ', len(total_labels))
-    total_labels = np.asarray(total_labels, np.int32)
-    total_predictions = np.asarray(total_predictions, np.int32)
-    total_acc = np.sum(total_labels == total_predictions) / (1.0 * len(total_labels))
-    print('the total acc is ', total_acc)
-    for class_id in range(5):
-        idx = np.where(total_labels == class_id)
-        cur_predictions = total_predictions[idx]
-        cur_gts = total_labels[idx]
-        cur_acc = np.sum(cur_predictions == cur_gts) / (1.0 * len(cur_gts))
-        print('the %d\'s acc is %.4f' % (class_id, cur_acc))
-    roi_features = np.asarray(roi_features, np.float32)
-    roi_labels = np.asarray(roi_labels, np.int32)
-    np.save(feature_save_path, roi_features)
-    np.save(label_save_path, roi_labels)
+        label_map = generate_roi_feature_with_attributions(os.path.dirname(cur_slice_dir),
+                                                           os.path.basename(cur_slice_dir), patch_size, sess, logits,
+                                                           nc_roi_placeholder, art_roi_placeholder, pv_roi_placeholder,
+                                                           nc_patch_placeholder, art_patch_placeholder,
+                                                           pv_patch_placeholder, batch_attrs_placeholder,
+                                                           batch_size_placeholder)
+        print(np.shape(label_map))
+        cv2.imwrite('./' + os.path.basename(cur_slice_dir) + '.PNG', np.asarray(label_map, np.uint8))
+    #     for idx, slice_name in enumerate(slice_names):
+    #         if slice_name.startswith('.DS'):
+    #             continue
+    #         # if not slice_name.endswith('0'):
+    #         #     continue
+    #         print(slice_name, idx, ' / ', len(slice_names))
+    #         cur_data_dir = os.path.join(dataset, slice_name)
+    #         logits_values, sample_labels = generate_roi_feature_with_attributions(dataset, slice_name, patch_size,
+    #                                                                               sess, logits, nc_roi_placeholder,
+    #                                                                               art_roi_placeholder,
+    #                                                                               pv_roi_placeholder,
+    #                                                                               nc_patch_placeholder,
+    #                                                                               art_patch_placeholder,
+    #                                                                               pv_patch_placeholder,
+    #                                                                               batch_attrs_placeholder,
+    #                                                                               batch_size_placeholder)
+    #         total_labels.extend(sample_labels)
+    #         total_predictions.extend(logits_values)
+    #         roi_feature = np.asarray([0., 0., 0., 0., 0.], np.float32)
+    #         patch_num = len(logits_values) * 1.0
+    #         for value in np.unique(logits_values):
+    #             roi_feature[value] = np.sum(logits_values == value) * 1.0
+    #         roi_feature /= patch_num
+    #         roi_features.append(roi_feature)
+    #         print(slice_name[-1], ' logits_values is ', logits_values)
+    #         print('roi_feature is ', roi_feature)
+    #         roi_labels.append(int(slice_name[-1]))
+    # print('the number of patches is ', len(total_labels))
+    # total_labels = np.asarray(total_labels, np.int32)
+    # total_predictions = np.asarray(total_predictions, np.int32)
+    # total_acc = np.sum(total_labels == total_predictions) / (1.0 * len(total_labels))
+    # print('the total acc is ', total_acc)
+    # for class_id in range(5):
+    #     idx = np.where(total_labels == class_id)
+    #     cur_predictions = total_predictions[idx]
+    #     cur_gts = total_labels[idx]
+    #     cur_acc = np.sum(cur_predictions == cur_gts) / (1.0 * len(cur_gts))
+    #     print('the %d\'s acc is %.4f' % (class_id, cur_acc))
+    # roi_features = np.asarray(roi_features, np.float32)
+    # roi_labels = np.asarray(roi_labels, np.int32)
+    # np.save(feature_save_path, roi_features)
+    # np.save(label_save_path, roi_labels)
 
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/1/res50_original_alpha0.25/model.ckpt-5782',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/0/res50_original_alpha0.25/model.ckpt-1054',
         'netname': 'res50',
-        'stage_name': 'val',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
-        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/7x7/res50_original_alpha0.25',
+        'slice_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/test/3066802_2393925_0_0_3',
         'attribute_flag': True,
         'clstm_flag': True,
         'global_flag': True,
         'local_flag': True,
         'patch_size': 7,
-        'gpu_id': '2'
+        'gpu_id': '1'
     }
     # 0 9935
     # 1 9946
     os.environ['CUDA_VISIBLE_DEVICES'] = restore_paras['gpu_id']
-    util.proc.set_proc_name('ld' + '_' + 'compute_' + restore_paras['stage_name'] + '_roi_feature_on' + '_GPU_'
-                            + restore_paras['gpu_id'])
-    if not os.path.exists(restore_paras['roi_feature_save_dir']):
-        print('roi_feature_save_dir do not exists')
-        os.mkdir(restore_paras['roi_feature_save_dir'])
-        print('make it!')
+
     generate_roi_feature_dataset(
-        os.path.join(restore_paras['dataset_dir'], restore_paras['stage_name']), restore_paras['netname'],
+        restore_paras['slice_dir'], restore_paras['netname'],
         restore_paras['model_path'],
-        os.path.join(restore_paras['roi_feature_save_dir'],
-                     restore_paras['netname'] + '_' + restore_paras['stage_name'] + '.npy'),
-        os.path.join(restore_paras['roi_feature_save_dir'],
-                     restore_paras['netname'] + '_' + restore_paras['stage_name'] + '_label' + '.npy'),
         using_attribute_flag=restore_paras['attribute_flag'], using_clstm_flag=restore_paras['clstm_flag'],
         global_branch_flag=restore_paras['global_flag'], local_branch_flag=restore_paras['local_flag'],
         patch_size=restore_paras['patch_size']

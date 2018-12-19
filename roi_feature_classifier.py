@@ -84,7 +84,7 @@ def generate_features_labels(data_dir):
     return train_features, train_labels, val_features, val_labels, test_features, test_labels
 
 
-def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/res50_original',
+def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/7x7/res50_original_alpha0.25',
                  basename='res50'):
     from dataset.medicalImage import resolve_attribute_file
     import config
@@ -118,12 +118,14 @@ def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalIm
         print(os.path.join(dataset_dir, stage_name))
         slice_names = os.listdir(os.path.join(dataset_dir, stage_name))
         labels = []
+        res_slice_names = []
         for slice_name in slice_names:
             if slice_name.startswith('.DS'):
                 continue
             labels.append(int(slice_name[-1]))
+            res_slice_names.append(slice_name)
         print slice_names
-        return labels, slice_names
+        return labels, res_slice_names
 
     train_npy_path = os.path.join(dataset_dir, basename + '_train.npy')
     val_npy_path = os.path.join(dataset_dir, basename + '_val.npy')
