@@ -874,6 +874,68 @@ def compute_edge(mask_path):
     save_mhd_image(np.asarray(edge, np.int32), edge_path)
 
 
+def cyw_livertumorwithboundary(image_dir, save_dir):
+    id2name = {
+        0: 'CYST',
+        1: 'FNH',
+        2: 'HCC',
+        3: 'HEM',
+        4: 'METS'
+    }
+    for sub_name in ['train', 'val', 'test']:
+        cur_dir = os.path.join(image_dir, sub_name)
+        names = os.listdir(cur_dir)
+        for name in names:
+            if name.startswith('.DS'):
+                continue
+            cur_slice_dir = os.path.join(image_dir, sub_name, name)
+            nc_img_path = glob(os.path.join(cur_slice_dir, 'NC_Image*.mhd'))[0]
+            art_img_path = glob(os.path.join(cur_slice_dir, 'ART_Image*.mhd'))[0]
+            pv_img_path = glob(os.path.join(cur_slice_dir, 'PV_Image*.mhd'))[0]
+            print(nc_img_path, art_img_path, pv_img_path)
+            nc_img = np.squeeze(read_mhd_image(nc_img_path))
+            art_img = np.squeeze(read_mhd_image(art_img_path))
+            pv_img = np.squeeze(read_mhd_image(pv_img_path))
+
+            def preprocessing(img):
+                img = np.asarray(img, np.float32)
+                max_v = 180.
+                min_v = -70.
+                img[img > max_v] = max_v
+                img[img < min_v] = min_v
+                img -= np.mean(img)
+                min_v = np.min(img)
+                max_v = np.max(img)
+                interv = max_v - min_v
+                img = (img - min_v) / interv
+                return np.asarray(img * 255, np.uint8)
+            nc_img = preprocessing(nc_img)
+            art_img = preprocessing(art_img)
+            pv_img = preprocessing(pv_img)
+            nc_mask_path = glob(os.path.join(cur_slice_dir, 'NC_Mask*.mhd'))[0]
+            art_mask_path = glob(os.path.join(cur_slice_dir, 'ART_Mask*.mhd'))[0]
+            pv_mask_path = glob(os.path.join(cur_slice_dir, 'PV_Mask*.mhd'))[0]
+            print(nc_mask_path, art_mask_path, pv_mask_path)
+            nc_mask = np.squeeze(read_mhd_image(nc_mask_path))
+            art_mask = np.squeeze(read_mhd_image(art_mask_path))
+            pv_mask = np.squeeze(read_mhd_image(pv_mask_path))
+
+            nc_mask, nc_min_xs, nc_min_ys, nc_max_xs, nc_max_ys = get_filled_mask(nc_mask)
+            art_mask, art_min_xs, art_min_ys, art_max_xs, art_max_ys = get_filled_mask(art_mask)
+            pv_mask, pv_min_xs, pv_min_ys, pv_max_xs, pv_max_ys = get_filled_mask(pv_mask)
+            nc_tumor = nc_img[nc_min_xs: nc_max_xs, nc_min_ys: nc_max_ys]
+            art_tumor = art_img[art_min_xs: art_max_xs, art_min_ys: art_max_ys]
+            pv_tumor = pv_img[pv_min_xs: pv_max_xs, pv_min_ys: pv_max_ys]
+            cur_slice_save_dir = os.path.join(save_dir, id2name[int(name[-1])], name.split('_')[0])
+            if not os.path.exists(cur_slice_save_dir):
+                os.makedirs(cur_slice_save_dir)
+            cv2.imwrite(os.path.join(cur_slice_save_dir, 'NC_Slice.png'), np.asarray(nc_img, np.uint8))
+            cv2.imwrite(os.path.join(cur_slice_save_dir, 'ART_Slice.png'), np.asarray(art_img, np.uint8))
+            cv2.imwrite(os.path.join(cur_slice_save_dir, 'PV_Slice.png'), np.asarray(pv_img, np.uint8))
+            cv2.imwrite(os.path.join(cur_slice_save_dir, 'NC_Tumor.png'), np.asarray(nc_tumor, np.uint8))
+            cv2.imwrite(os.path.join(cur_slice_save_dir, 'ART_Tumor.png'), np.asarray(art_tumor, np.uint8))
+            cv2.imwrite(os.path.join(cur_slice_save_dir, 'PV_Tumor.png'), np.asarray(pv_tumor, np.uint8))
+
 if __name__ == '__main__':
     # for phasename in ['NC', 'ART', 'PV']:
     #     convert_dicomseries2mhd(
@@ -920,6 +982,10 @@ if __name__ == '__main__':
     #             cur_dataset_dir
     #         )
 
-    compute_edge(
-        '/资料/数据集/MedicalImage/2631152_2778752_1_2_4/NC_Mask.mhd'
+    # compute_edge(
+    #     '/资料/数据集/MedicalImage/2631152_2778752_1_2_4/NC_Mask.mhd'
+    # )
+    cyw_livertumorwithboundary(
+        '/media/dl-box/HDCZ-UT/datasets/MICCAI2018/Slices/un-crossvalidation',
+        '/media/dl-box/HDCZ-UT/datasets/MICCAI2018/Slices/un-crossvalidation/PNG'
     )
