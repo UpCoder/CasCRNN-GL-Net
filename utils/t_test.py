@@ -45,7 +45,7 @@ def t_test_for_finetuneed():
     # pvalue is:  0.123142952777
     mean1 = 87.64
     mean2 = 80.33
-
+    #import math
     std1 = 0.26
     std2 = 6.14
 
@@ -78,8 +78,55 @@ def t_test_for_intraloss():
     print "pvalue is: ", pvalue
 
 
+def t_test_for_VGG16SVM():
+    print('execute t-test for VGG16SVM')
+    # pvalue is:  0.00111352494053
+    mean1 = 87.64
+    mean2 = 82.66
+
+    std1 = 0.26
+    std2 = 2.02
+    # import math
+    # std1 = std1 * math.sqrt(2)
+    # std2 = std2 * math.sqrt(2)
+
+    nobs1 = 2
+    nobs2 = 2
+
+    (statistic, pvalue) = stats.ttest_ind_from_stats(mean1=mean1, std1=std1, nobs1=nobs1, mean2=mean2,
+                                                     std2=std2, nobs2=nobs2)
+
+    print "t statistic is: ", statistic
+    print "pvalue is: ", pvalue
+    print '\n'
+
+
+def t_test_for_VGG16KNN():
+    print('execute t-test for t_test_for_VGG16KNN')
+    # pvalue is:  0.00111352494053
+    mean1 = 87.64
+    mean2 = 83.11
+
+    std1 = 0.26
+    std2 = 2.47
+    # import math
+    # std1 = std1 * math.sqrt(2)
+    # std2 = std2 * math.sqrt(2)
+
+    nobs1 = 2
+    nobs2 = 2
+
+    (statistic, pvalue) = stats.ttest_ind_from_stats(mean1=mean1, std1=std1, nobs1=nobs1, mean2=mean2,
+                                                     std2=std2, nobs2=nobs2)
+
+    print "t statistic is: ", statistic
+    print "pvalue is: ", pvalue
+    print '\n'
+
+
 if __name__ == '__main__':
     t_test_for_attribution()
     t_test_for_intraloss()
     t_test_for_clstm()
     t_test_for_finetuneed()
+    t_test_for_VGG16SVM()

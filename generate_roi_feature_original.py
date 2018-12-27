@@ -413,17 +413,17 @@ def generate_roi_feature_dataset(dataset, netname, model_path, feature_save_path
 
 if __name__ == '__main__':
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/1/res50_original_alpha0.25/model.ckpt-5782',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/0/res50_original_alpha0.25_lambda1.0_wolstm/model.ckpt-2165',
         'netname': 'res50',
-        'stage_name': 'val',
-        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
-        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1/roi_feature/7x7/res50_original_alpha0.25',
+        'stage_name': 'test',
+        'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0',
+        'roi_feature_save_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/7x7/res50_original_alpha0.25_lambda1.0_wolstm',
         'attribute_flag': True,
-        'clstm_flag': True,
+        'clstm_flag': False,
         'global_flag': True,
         'local_flag': True,
         'patch_size': 7,
-        'gpu_id': '2'
+        'gpu_id': '3'
     }
     # 0 9935
     # 1 9946

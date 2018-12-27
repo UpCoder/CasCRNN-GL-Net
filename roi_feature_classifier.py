@@ -84,7 +84,7 @@ def generate_features_labels(data_dir):
     return train_features, train_labels, val_features, val_labels, test_features, test_labels
 
 
-def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/7x7/res50_original_alpha0.25',
+def load_feature(dataset_dir='/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/0/roi_feature/7x7/res50_original_alpha0.25_lambda1.0_wolstm',
                  basename='res50'):
     from dataset.medicalImage import resolve_attribute_file
     import config

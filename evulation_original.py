@@ -382,13 +382,24 @@ if __name__ == '__main__':
     # 0.25+0.25/1 1533 86
     # 0.0+0.25/0 642 75
     # 0.0+0.25/1 965 78
+    # 0.75+0.25/0 3004 85
+    # 0.75+0.25/1 3005 84
+    # 1.25+0.25/0 1622 85
+    # 1.25+0.25/1 1780 85
+    # 1.5+0.25/0 1543 85
+    # 1.5+0.25/1 2109 85
+
+    # wo lstm
+    # 0 2165 79
+    # 1 3309 89
+    # 1 2729 79
     restore_paras = {
-        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/1/res50_original_lambda0.75/model.ckpt-1535',
+        'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/1/res50_original_alpha0.25_lambda1.0_wolstm/model.ckpt-4466',
         'netname': 'res50',
         'stage_name': 'test',
         'dataset_dir': '/home/dl-box/ld/Documents/datasets/IEEEonMedicalImage_Splited/1',
         'attribute_flag': True,
-        'clstm_flag': True,
+        'clstm_flag': False,
         'global_flag': True,
         'local_flag': True,
         'patch_size': 7,

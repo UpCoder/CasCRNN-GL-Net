@@ -921,5 +921,5 @@ if __name__ == '__main__':
     #         )
 
     compute_edge(
-        '/资料/数据集/MedicalImage/2631152_2778752_1_2_4/PV_Mask.mhd'
+        '/资料/数据集/MedicalImage/2631152_2778752_1_2_4/NC_Mask.mhd'
     )
