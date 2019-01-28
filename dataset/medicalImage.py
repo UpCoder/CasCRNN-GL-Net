@@ -1,5 +1,6 @@
 # -*- coding=utf-8 -*-
 import SimpleITK as itk
+# import dicom as pydicom
 import dicom as pydicom
 import numpy as np
 from PIL import Image, ImageDraw
@@ -856,7 +857,7 @@ def static_dataset_distribution(dataset_dir):
             res_dict[class_idx] += 1
         else:
             res_dict[class_idx] = 1
-    print res_dict
+    print(res_dict)
 
 
 def compute_edge(mask_path):
@@ -866,7 +867,7 @@ def compute_edge(mask_path):
     '''
     mask_image = np.squeeze(read_mhd_image(mask_path))
     mask_image = np.asarray(mask_image, np.uint8)
-    print np.shape(mask_image)
+    print(np.shape(mask_image))
     from medicalImage import fill_region
     edge = cv2.Canny(mask_image, 1, 1)
     edge = np.asarray(edge == 255, np.uint8)

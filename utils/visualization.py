@@ -24,7 +24,7 @@ def visualize_pixel_distribution(input=None):
         for idx, slice_name in enumerate(slice_names):
             if slice_name.startswith('.DS'):
                 continue
-            print idx, ' / ', len(slice_names)
+            print(idx, ' / ', len(slice_names))
             cur_label = int(slice_name[-1])
             cur_slice_dir = os.path.join(cur_dataset_dir, slice_name)
 
@@ -124,8 +124,8 @@ def visualize_patch_size():
     plt.plot(xs, ys_mean, linewidth=1)
     plt.plot(xs, ys_mean, 'b+')
     # plt.legend(names, loc='upper right')
-    plt.xlabel('patch_size')
-    plt.ylabel('accuracy')
+    plt.xlabel('patch_size', fontsize=15)
+    plt.ylabel('accuracy(%)', fontsize=15)
     plt.ylim((70, 100))
     # plt.show()
     plt.savefig('./' + 'patch_size.svg')
@@ -137,8 +137,8 @@ def visualize_alpha():
 
     plt.plot(alpha, mean_value)
     plt.plot(alpha, mean_value, 'b+')
-    plt.xlabel('alpha')
-    plt.ylabel('accuracy(%)')
+    plt.xlabel('alpha', fontsize=15)
+    plt.ylabel('accuracy(%)', fontsize=15)
     plt.ylim((70, 100))
     plt.savefig('./' + 'alpha.svg')
 
@@ -148,8 +148,8 @@ def visualize_lambda():
     mean_value = [77.06, 82.53, 85.53, 85.00, 87.75, 85.48, 85.94]
     plt.plot(lambda_list, mean_value)
     plt.plot(lambda_list, mean_value, 'b+')
-    plt.xlabel('lambda')
-    plt.ylabel('accuracy(%)')
+    plt.xlabel('lambda', fontsize=15)
+    plt.ylabel('accuracy(%)', fontsize=15)
     plt.ylim((70, 100))
     plt.savefig('./' + 'lambda.svg')
 
@@ -158,4 +158,5 @@ if __name__ == '__main__':
     # visualize_patch_size()
     # visualize_alpha()
     # visualize_lambda()
+
     visualize_pixel_distribution(True)
