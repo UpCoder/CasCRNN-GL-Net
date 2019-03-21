@@ -12,7 +12,6 @@ import config
 os.environ['CUDA_VISIBLE_DEVICES']=config.TRAIN_GPU_ID
 slim = tf.contrib.slim
 
-
 # =========================================================================== #
 # Checkpoint and running Flags
 # =========================================================================== #

@@ -165,7 +165,7 @@ if __name__ == '__main__':
     # test_features = test_data['features']
     # test_labels = test_data['labels']
     # SVM
-    predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, test_features, test_labels,
+    predicted_label, c_params, g_params, accs = SVM.do(train_features, train_labels, val_features, val_labels,
                                                        adjust_parameters=True)
     # use default parameters
     predicted_label, acc = SVM.do(train_features, train_labels, test_features, test_labels, adjust_parameters=False,

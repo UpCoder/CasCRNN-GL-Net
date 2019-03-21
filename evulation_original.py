@@ -389,10 +389,6 @@ if __name__ == '__main__':
     # 1.5+0.25/0 1543 85
     # 1.5+0.25/1 2109 85
 
-    # wo lstm
-    # 0 2165 79
-    # 1 3309 89
-    # 1 2729 79
     restore_paras = {
         'model_path': '/media/dl-box/HDD3/ld/PycharmProjects/GL_BD_LSTM/logs/7x7/1/res50_original_alpha0.25_lambda1.0_wolstm/model.ckpt-4466',
         'netname': 'res50',
