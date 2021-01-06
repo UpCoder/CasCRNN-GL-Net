@@ -9,7 +9,7 @@ beautifulsoup4==4.4.1
 biwrap==0.1.6
 bleach==1.5.0
 Box2D-kengz==2.3.3
-CairoSVG==1.0.9
+CairoSVG==2.5.1
 certifi==2017.7.27.1
 cffi==1.11.5
 chainer==4.0.0
