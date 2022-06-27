@@ -124,7 +124,7 @@ pyxdg==0.25
 PyYAML==3.12
 pyzmq==16.0.2
 qtconsole==4.3.0
-reportlab==3.3.0
+reportlab==3.5.55
 requests==2.21.0
 roi-pooling==1.0
 scandir==1.5
