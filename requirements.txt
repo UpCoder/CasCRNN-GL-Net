@@ -35,7 +35,7 @@ graphviz==0.8.4
 gym==0.10.5
 gyp==0.1
 h5py==2.7.1
-html5lib==0.9999999
+html5lib==0.999999999
 idna==2.6
 imageio==2.3.0
 imgaug==0.2.5
