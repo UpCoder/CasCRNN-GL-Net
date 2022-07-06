@@ -58,7 +58,7 @@ kiwisolver==1.0.1
 labelme==2.6.3
 leveldb==0.194
 libtiff==0.4.0
-lxml==4.0.0
+lxml==4.9.1
 Markdown==2.6.11
 MarkupSafe==1.0
 matplotlib==2.2.2
